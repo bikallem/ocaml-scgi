@@ -29,18 +29,18 @@ type header =
   | `Other of string
   ]
 
-val make : int -> Http_method.t -> Uri.t -> Headers.t -> string Lwt.t -> t
+val make : int -> Http_method.t -> Uri.t -> Headers.t -> string -> t
 val of_stream : char Lwt_stream.t -> t Lwt.t
 
 val content_length : t -> int
 val meth : t -> Http_method.t
 val uri : t -> Uri.t
 val path : t -> string
-val contents : t -> string Lwt.t
-val param : ?meth:[ `GET | `POST ] -> t -> string -> string option Lwt.t
-val param_exn : ?meth:[ `GET | `POST ] -> ?default:string -> t -> string -> string Lwt.t
+val contents : t -> string
+val param : ?meth:[ `GET | `POST ] -> t -> string -> string option
+val param_exn : ?meth:[ `GET | `POST ] -> ?default:string -> t -> string -> string
 val params_get : t -> (string * string) list
-val params_post : t -> (string * string) list Lwt.t
+val params_post : t -> (string * string) list
 val header : t -> header -> string list
 val cookie : t -> string -> string option
 

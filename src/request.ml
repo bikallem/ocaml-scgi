@@ -7,9 +7,9 @@ type t = {
   meth : Http_method.t;
   uri : Uri.t;
   headers : (string * string) list;
-  content : string Lwt.t;
+  content : string;
   get_params : (string * string) list;
-  post_params : (string * string) list Lwt.t;
+  post_params : (string * string) list;
 }
 
 type header =
@@ -86,14 +86,11 @@ let make content_length meth uri headers content =
     post_params =
       match meth with
         | `POST when header' headers `Http_content_type = ["application/x-www-form-urlencoded"] ->
-            content >>= fun s ->
-            Lwt.return (concat_query_values (Uri.query_of_encoded s))
-        | _ -> Lwt.return []
+            concat_query_values (Uri.query_of_encoded content)
+        | _ -> []
   }
 
 let to_string t =
-  t.content >>= fun content ->
-  t.post_params >>= fun post_params ->
   let s lst = String.concat "; " (List.map (fun (n, v) -> Printf.sprintf "(\"%s\", \"%s\")" n v) lst) in
   Lwt.return
     (Printf.sprintf
@@ -102,9 +99,9 @@ let to_string t =
        (Http_method.to_string t.meth)
        (Uri.to_string t.uri)
        (s t.headers)
-       content
+       t.content
        (s t.get_params)
-       (s post_params)
+       (s t.post_params)
     )
 
 let of_stream stream =
@@ -116,38 +113,43 @@ let of_stream stream =
         try_lwt Lwt.return (int_of_string content_length)
         with _ ->  raise_lwt (Failure ("Invalid content_length: [" ^ content_length ^ "]"))
       in
-      Lwt.wrap (fun () ->
-        (* Process the remaining headers *)
-        let (scgi, request_method, uri, headers) =
-          List.fold_left
-            (fun  (s, m, u, h) -> function
-                (* Look for known headers first *)
-              | ("SCGI",           s) -> (s, m, u, h)
-              | ("REQUEST_METHOD", m) -> (s, m, u, h)
-              | ("REQUEST_URI",    u) -> (s, m, u, h)
+      (* Process the remaining headers *)
+      let (scgi, request_method, uri, headers) =
+        List.fold_left
+          (fun  (s, m, u, h) -> function
+              (* Look for known headers first *)
+            | ("SCGI",           s) -> (s, m, u, h)
+            | ("REQUEST_METHOD", m) -> (s, m, u, h)
+            | ("REQUEST_URI",    u) -> (s, m, u, h)
 
-                (* Accumulate unknown headers *)
-              | header                -> (s, m, u, header :: h)
-            )
-            ("", "", "", [])
-            rest
-        in
-        match scgi with
-          | "1"  ->
-                (* SCGI header must be 1 according to spec *)
-            make
-              content_length
-              (Http_method.of_string request_method )
-              (Uri.of_string uri)
-              headers
-              (Lwt_stream.nget content_length stream >>= fun chars ->
-               let b = Buffer.create content_length in
-               List.iter (Buffer.add_char b) chars;
-               Lwt.return (Buffer.contents b)
-              )
-          | ""   -> raise (Failure "Missing SCGI header")
-          | _    -> raise (Failure "Unexpected SCGI header")
-        )  (* wrap *)
+            (* Accumulate unknown headers *)
+            | header                -> (s, m, u, header :: h)
+          )
+          ("", "", "", [])
+          rest
+      in
+      (match scgi with
+        | "1"  ->
+            (* SCGI header must be 1 according to spec *)
+            Lwt_stream.nget content_length stream >>= fun chars ->
+            let content =
+              let b = Buffer.create content_length in
+              List.iter (Buffer.add_char b) chars;
+              Buffer.contents b
+            in
+            let req =
+              make
+                content_length
+                (Http_method.of_string request_method )
+                (Uri.of_string uri)
+                headers
+                content
+            in
+            return req
+        | ""   -> raise (Failure "Missing SCGI header")
+        | _    -> raise (Failure "Unexpected SCGI header")
+      )
+
     | (n, _) :: _ -> raise_lwt (Failure ("Expected CONTENT_LENGTH, but got [" ^ n ^ "]"))
     | []          -> raise_lwt (Failure "No headers found")
 
@@ -159,35 +161,16 @@ let contents t = t.content
 
 let param ?meth t name =
   match List.Exceptionless.assoc name t.get_params with
-    | None -> t.post_params >|= List.Exceptionless.assoc name
-    | r -> Lwt.return r
+    | None -> List.Exceptionless.assoc name t.post_params
+    | r -> r
 
 let param_exn ?meth ?default t name =
-  Lwt.catch
-    (fun () ->
-      let rec loop = function
-        | None ->
-            Lwt.catch
-              (fun () -> loop (Some `POST))
-              (function
-                | Not_found -> loop (Some `GET)
-                | e -> Lwt.fail e)
-        | Some `GET ->
-            Lwt.wrap (fun () -> List.assoc name t.get_params)
-        | Some `POST ->
-            t.post_params >>= fun post_params ->
-            Lwt.wrap (fun () -> List.assoc name post_params)
-      in
-      loop meth
-    )
-    (function
-      | Not_found ->
-          begin match default with
-            | Some s -> Lwt.return s
-            | None   -> Lwt.fail Not_found
-          end
-      | e -> Lwt.fail e
-    )
+  match param ?meth t name with
+    | Some x -> x
+    | None ->
+        match default with
+          | Some x -> x
+          | None -> raise Not_found
 
 let params_get t = t.get_params
 let params_post t = t.post_params
