@@ -5,7 +5,7 @@ open Scgi
 let tests =
   ["cookies", (fun () ->
     let make cookies =
-      Request.make 100 `GET (Uri.of_string "http://example.net") ["HTTP_COOKIE", cookies] (Lwt.return "")
+      Request.make 100 `GET (Uri.of_string "http://example.net") ["HTTP_COOKIE", cookies] ""
     in
     let printer = string_option_printer in
     let r = make "uid=123456" in

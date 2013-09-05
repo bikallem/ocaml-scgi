@@ -44,7 +44,8 @@ let tests =
          (meth r)
      in
      lwt () = assert_string "uri" "/deepthought" (path r) in
-     contents r >>= (assert_string ~msg:"content" ~expected:"What is the answer to life?")
+     let body = contents r in
+     assert_string ~msg:"content" ~expected:"What is the answer to life?" body
    );
   ]
 
