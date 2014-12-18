@@ -45,9 +45,11 @@ let handler
                 response.headers
               else
                 match response.body with
-                  | `Stream (Some l, _) -> `Content_length l :: response.headers
-                  | `String s           -> `Content_length (String.length s) :: response.headers
-                  | `Stream (None, _)   -> response.headers
+                | `Stream (Some l, _) ->
+                    `Content_length l :: response.headers
+                | `String s           ->
+                    `Content_length (String.length s) :: response.headers
+                | `Stream (None, _)   -> response.headers
             in
 
             (* Write headers *)

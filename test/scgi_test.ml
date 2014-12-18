@@ -1,6 +1,6 @@
 (** Tests for the scgi module *)
 open Test_common
-open Scgi.Compatability
+open Scgi.Compatibility
 open Lwt
 
 let mock_request () =
