@@ -5,6 +5,8 @@ type port = int
 type socket_filename = string
 
 val handler_inet :
+  ?read_timeout: float (* default: 60. seconds *) ->
+  ?write_timeout: float (* default: 60. seconds *) ->
   ?read_error_handler:(exn -> Response.t Lwt.t) ->
   ?write_error_handler:(exn -> unit Lwt.t) ->
   server_name ->
@@ -14,6 +16,8 @@ val handler_inet :
   Lwt_io.server
 
 val handler_sock :
+  ?read_timeout: float (* default: 60. seconds *) ->
+  ?write_timeout: float (* default: 60. seconds *) ->
   ?read_error_handler:(exn -> Response.t Lwt.t) ->
   ?write_error_handler:(exn -> unit Lwt.t) ->
   server_name ->

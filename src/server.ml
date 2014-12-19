@@ -5,6 +5,9 @@ type inet_addr = string
 type port = int
 type socket_filename = string
 
+let default_read_timeout = 60.
+let default_write_timeout = 60.
+
 let default_read_error_handler exn =
   prerr_endline (Printexc.to_string exn ^ "\n" ^ Printexc.get_backtrace ());
   return
@@ -17,11 +20,18 @@ let default_write_error_handler exn =
   prerr_endline (Printexc.to_string exn ^ "\n" ^ Printexc.get_backtrace ());
   return ()
 
+
+let with_timeout timeout x =
+  Lwt.pick [Lwt_unix.timeout timeout; x]
+
+
 (*
    Handle a connection.
    A single request is processed, then the connection is closed.
 *)
 let handle_connection
+    ~read_timeout
+    ~write_timeout
     ~read_error_handler
     ~write_error_handler
     f inch ouch =
@@ -34,7 +44,8 @@ let handle_connection
   in
 
   let process_request () =
-    Request.of_stream (Lwt_io.read_chars inch) >>= fun request ->
+    with_timeout read_timeout
+      (Request.of_stream (Lwt_io.read_chars inch)) >>= fun request ->
     f request
   in
 
@@ -53,9 +64,10 @@ let handle_connection
         match response.body with
         | `Stream (Some l, _) ->
             `Content_length l :: response.headers
-        | `String s           ->
+        | `String s ->
             `Content_length (String.length s) :: response.headers
-        | `Stream (None, _)   -> response.headers
+        | `Stream (None, _) ->
+            response.headers
     in
 
     (* Write headers *)
@@ -81,18 +93,24 @@ let handle_connection
        >>= fun response ->
 
        catch
-         (fun () -> write_response response)
+         (fun () ->
+            with_timeout write_timeout
+              (write_response response)
+         )
          write_error_handler
        >>= fun () ->
 
        close_connection ()
     )
     (fun _e ->
+       (* read timeout, write timeout, or any other catastrophic exception *)
        close_connection ()
     )
 
 
 let handler
+    ~read_timeout
+    ~write_timeout
     ~read_error_handler
     ~write_error_handler
     ~sockaddr
@@ -102,6 +120,8 @@ let handler
   Lwt_io.establish_server sockaddr (fun (ic, oc) ->
     ignore_result (
       handle_connection
+        ~read_timeout
+        ~write_timeout
         ~read_error_handler
         ~write_error_handler
         f ic oc
@@ -110,6 +130,8 @@ let handler
 
 
 let handler_inet
+    ?(read_timeout = default_read_timeout)
+    ?(write_timeout = default_write_timeout)
     ?(read_error_handler = default_read_error_handler)
     ?(write_error_handler = default_write_error_handler)
     name
@@ -117,18 +139,24 @@ let handler_inet
     port
     f =
     handler
+      ~read_timeout
+      ~write_timeout
       ~read_error_handler
       ~write_error_handler
       ~sockaddr: (Unix.ADDR_INET (Unix.inet_addr_of_string inet_addr, port))
       ~name f
 
 let handler_sock
+    ?(read_timeout = default_read_timeout)
+    ?(write_timeout = default_write_timeout)
     ?(read_error_handler = default_read_error_handler)
     ?(write_error_handler = default_write_error_handler)
     name
     socket_filename
     f =
     handler
+      ~read_timeout
+      ~write_timeout
       ~read_error_handler
       ~write_error_handler
       ~sockaddr: (Unix.ADDR_UNIX socket_filename)
