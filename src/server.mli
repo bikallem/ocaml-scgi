@@ -11,7 +11,7 @@ val handler_inet :
   inet_addr ->
   port ->
   (Request.t -> Response.t Lwt.t) ->
-  unit
+  Lwt_io.server
 
 val handler_sock :
   ?read_error_handler:(exn -> Response.t Lwt.t) ->
@@ -19,4 +19,4 @@ val handler_sock :
   server_name ->
   socket_filename ->
   (Request.t -> Response.t Lwt.t) ->
-  unit
+  Lwt_io.server
