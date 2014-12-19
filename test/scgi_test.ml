@@ -33,20 +33,20 @@ let tests =
      assert_int "same length list" (List.length result) 4
    );
    "scgi_request", (fun () ->
-     lwt r = Scgi.Scgi_request.of_stream (Lwt_stream.of_string (mock_request ())) in
+     Scgi.Scgi_request.of_stream (Lwt_stream.of_string (mock_request ()))
+     >>= fun r ->
      let open Scgi.Scgi_request in
-     lwt () = assert_int "content_length" 27 (content_length r) in
-     lwt () =
-       assert_equal
-         ~printer:Scgi.Http_method.to_string
-         ~msg:"method"
-         ~expected:`POST
-         (meth r)
-     in
-     lwt () = assert_string "uri" "/deepthought" (path r) in
+     assert_int "content_length" 27 (content_length r) >>= fun () ->
+     assert_equal
+       ~printer:Scgi.Http_method.to_string
+       ~msg:"method"
+       ~expected:`POST
+       (meth r)
+     >>= fun () ->
+     assert_string "uri" "/deepthought" (path r) >>= fun () ->
      let body = contents r in
      assert_string ~msg:"content" ~expected:"What is the answer to life?" body
    );
   ]
 
-let _ = run tests
+let () = run tests
