@@ -8,7 +8,8 @@ ML = \
   headers.ml \
   http_method.ml \
   request.ml \
-  server.ml
+  server.ml \
+  client.ml
 
 MLI = \
   http_header.mli \
@@ -18,7 +19,8 @@ MLI = \
   headers.mli \
   http_method.mli \
   request.mli \
-  server.mli
+  server.mli \
+  client.mli
 
 CMAS = $(NAME).cma
 CMXAS = $(NAME).cmxa
