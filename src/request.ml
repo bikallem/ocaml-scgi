@@ -5,7 +5,6 @@ open Lwt
 open Batteries
 
 type t = {
-  content_length : int;
   meth : Http_method.t;
   uri : Uri.t;
   headers : (string * string) list;
@@ -78,10 +77,9 @@ let get_header headers header_name =
 let concat_query_values l =
   List.map (fun (k, vl) -> (k, String.concat "," vl)) l
 
-let make content_length meth uri headers content =
+let make meth uri headers content =
   let headers = List.map (fun (k, v) -> String.lowercase k, v) headers in
-  { content_length;
-    meth;
+  { meth;
     uri;
     headers = headers;
     content;
@@ -102,7 +100,7 @@ let to_debug_string t =
     (sprintf
        "{ content_length: %d; meth: %s; uri: \"%s\"; headers: [ %s]; \
           content: \"%s\"; get_params: [ %s]; post_params: [ %s] }"
-       t.content_length
+       (String.length t.content)
        (Http_method.to_string t.meth)
        (Uri.to_string t.uri)
        (s t.headers)
@@ -146,7 +144,6 @@ let of_stream stream =
             in
             let req =
               make
-                content_length
                 (Http_method.of_string request_method )
                 (Uri.of_string uri)
                 headers
@@ -164,7 +161,7 @@ let of_stream stream =
 let to_buffer buf x =
   let headers = Buffer.create 1000 in
   let add_header k v = bprintf headers "%s\x00%s\x00" k v in
-  add_header "CONTENT_LENGTH" (string_of_int x.content_length);
+  add_header "CONTENT_LENGTH" (string_of_int (String.length x.content));
   add_header "SCGI" "1";
   add_header "REQUEST_METHOD" (Http_method.to_string x.meth);
   add_header "REQUEST_URI" (Uri.to_string x.uri);
@@ -179,7 +176,7 @@ let to_string x =
   to_buffer buf x;
   Buffer.contents buf
 
-let content_length t = t.content_length
+let content_length t = String.length t.content
 let meth t = t.meth
 let uri t = t.uri
 let path t = Uri.path t.uri

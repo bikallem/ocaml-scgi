@@ -29,7 +29,7 @@ type header =
   | `Other of string
   ]
 
-val make : int -> Http_method.t -> Uri.t -> Headers.t -> string -> t
+val make : Http_method.t -> Uri.t -> Headers.t -> string -> t
 val of_stream : char Lwt_stream.t -> t Lwt.t
 
 val to_string : t -> string
