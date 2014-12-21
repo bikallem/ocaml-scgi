@@ -4,9 +4,46 @@ let sock_send sock s =
   let oc = Lwt_io.of_fd ~mode:Lwt_io.output sock in
   Lwt_io.write oc s
 
+let header_re = Str.regexp "^\\([^:]*\\):[ \t]*\\(.*\\)$"
+let status_re = Str.regexp "^\\([0-9][0-9][0-9]\\) \\(.*\\)$"
+
+let parse_header s =
+  match Str.string_match header_re s 0 with
+  | false -> failwith "Malformed header"
+  | true -> String.lowercase (Str.matched_group 1 s), Str.matched_group 2 s
+
+let read_header ic =
+  Lwt_io.read_line ic >>= function
+  | "" -> return None
+  | s -> return (Some (parse_header s))
+
+let parse_status_value s =
+  match Str.string_match status_re s 0 with
+  | false -> failwith "Malformed status header"
+  | true ->
+      let code = int_of_string (Str.matched_group 1 s) in
+      let reason = Str.matched_group 2 s in
+      Http_status.of_pair (code, reason)
+
+let read_cgi_status ic =
+  read_header ic >>= function
+  | Some ("status", s) -> return (parse_status_value s)
+  | _ -> failwith "Malformed response (status line)"
+
+let read_headers ic =
+  let rec loop ic acc =
+    read_header ic >>= function
+    | None -> return (List.rev acc)
+    | Some x -> loop ic (`Other x :: acc)
+  in
+  loop ic []
+
 let sock_receive sock =
   let ic = Lwt_io.of_fd ~mode:Lwt_io.input sock in
-  Lwt_io.read ic
+  read_cgi_status ic >>= fun status ->
+  read_headers ic >>= fun headers ->
+  Lwt_io.read ic >>= fun body ->
+  return (Response.make ~status ~headers ~body:(`String body) ())
 
 let send_request sock req =
   sock_send sock (Request.to_string req)
@@ -17,7 +54,6 @@ let receive_response sock =
 
 let request_inet
   ~server_name
-  ~inet_addr
   ~port
   req =
 
@@ -42,7 +78,6 @@ let request_inet
     )
 
 let request_sock
-  ~server_name
   ~socket_filename
   req =
 

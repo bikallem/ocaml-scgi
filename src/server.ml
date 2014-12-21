@@ -9,15 +9,17 @@ let default_read_timeout = 60.
 let default_write_timeout = 60.
 
 let default_read_error_handler exn =
-  prerr_endline (Printexc.to_string exn ^ "\n" ^ Printexc.get_backtrace ());
-  return
-    { Response.status = `Internal_server_error;
-      headers = [`Content_type "text/plain"];
-      body = `String (Printexc.to_string exn);
-    }
+  let backtrace = Printexc.get_backtrace () in
+  prerr_endline (Printexc.to_string exn ^ "\n" ^ backtrace);
+  return {
+    Response.status = `Internal_server_error;
+    headers = [`Content_type "text/plain"];
+    body = `String (Printexc.to_string exn);
+  }
 
 let default_write_error_handler exn =
-  prerr_endline (Printexc.to_string exn ^ "\n" ^ Printexc.get_backtrace ());
+  let backtrace = Printexc.get_backtrace () in
+  prerr_endline (Printexc.to_string exn ^ "\n" ^ backtrace);
   return ()
 
 
@@ -71,7 +73,7 @@ let handle_connection
     in
 
     (* Write headers *)
-    Lwt_util.iter
+    Lwt_list.iter_s
       (fun h -> Lwt_io.write ouch (Http_header.to_string h))
       (`Status response.status :: response_headers)
     >>= fun () ->
@@ -80,9 +82,11 @@ let handle_connection
     Lwt_io.write ouch "\r\n" >>= fun () ->
 
     (* Write the body *)
-    match response.body with
-    | `Stream (_, s) -> Lwt_io.write_chars ouch s
-    | `String s      -> Lwt_io.write ouch s
+    (match response.body with
+     | `Stream (_, s) -> Lwt_io.write_chars ouch s
+     | `String s      -> Lwt_io.write ouch s
+    ) >>= fun () ->
+    Lwt_io.flush ouch
   in
 
   catch
@@ -103,7 +107,6 @@ let handle_connection
        close_connection ()
     )
     (fun _e ->
-       (* read timeout, write timeout, or any other catastrophic exception *)
        close_connection ()
     )
 

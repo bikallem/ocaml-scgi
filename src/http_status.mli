@@ -37,6 +37,13 @@ type t =
     | `Temporary_redirect
     | `Unauthorized
     | `Unsupported_media_type ]
-val values : t -> int * string
+
+val of_pair : int * string -> t
+
+val to_pair : t -> int * string
 val to_int : t -> int
 val to_string : t -> string
+
+(**/**)
+val values : t -> int * string
+  (* deprecated; same as to_pair *)
