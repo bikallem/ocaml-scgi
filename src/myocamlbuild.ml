@@ -33,7 +33,6 @@ dispatch begin function
 
       (* When one link an OCaml library/binary/package, one should use -linkpkg *)
        flag ["ocaml"; "compile"] (S[A"-dtypes"]);
-       flag ["ocaml"; "compile"] (S[A"-warn-error"; A"Ay"]);
        flag ["ocaml"; "compile"] (S[A"-ppopt"; A"-lwt-debug"]);
 
        flag ["ocaml"; "link"] & A"-linkpkg";

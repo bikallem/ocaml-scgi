@@ -29,8 +29,12 @@ type header =
   | `Other of string
   ]
 
-val make : int -> Http_method.t -> Uri.t -> Headers.t -> string -> t
+val make : Http_method.t -> Uri.t -> Headers.t -> string -> t
 val of_stream : char Lwt_stream.t -> t Lwt.t
+
+val to_string : t -> string
+  (* to_string now produces a valid SCGI request string.
+     Use to_debug_string for a human-readable representation. *)
 
 val content_length : t -> int
 val meth : t -> Http_method.t
@@ -38,11 +42,11 @@ val uri : t -> Uri.t
 val path : t -> string
 val contents : t -> string
 val param : ?meth:[ `GET | `POST ] -> t -> string -> string option
-val param_exn : ?meth:[ `GET | `POST ] -> ?default:string -> t -> string -> string
+val param_exn :
+  ?meth:[ `GET | `POST ] -> ?default:string -> t -> string -> string
 val params_get : t -> (string * string) list
 val params_post : t -> (string * string) list
 val header : t -> header -> string list
 val cookie : t -> string -> string option
 
-val to_string : t -> string Lwt.t
-  (** For debugging *)
+val to_debug_string : t -> string

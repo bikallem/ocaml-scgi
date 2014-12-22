@@ -1,9 +1,10 @@
 (** SCGI request *)
+
+open Printf
 open Lwt
 open Batteries
 
 type t = {
-  content_length : int;
   meth : Http_method.t;
   uri : Uri.t;
   headers : (string * string) list;
@@ -40,78 +41,81 @@ type header =
   | `Other of string
   ]
 
-let header' headers name =
-  let name =
-    match name with
-      | `Http_cookie -> "http_cookie"
-      | `Http_accept_charset -> "http_accept_charset"
-      | `Http_accept_language -> "http_accept_language"
-      | `Http_accept_encoding -> "http_accept_encoding"
-      | `Http_referer -> "http_referer"
-      | `Http_accept -> "http_accept"
-      | `Http_content_type -> "http_content_type"
-      | `Http_content_md5 -> "http_content_md5"
-      | `Http_user_agent -> "http_user_agent"
-      | `Http_origin -> "http_origin"
-      | `Http_cache_control -> "http_cache_control"
-      | `Http_content_length -> "http_content_length"
-      | `Http_connection -> "http_connection"
-      | `Http_host -> "http_host"
-      | `Http_authorization -> "http_authorization"
-      | `Http_date -> "http_date"
-      | `Http_x_forwarded_proto -> "http_x_forwarded_proto"
-      | `Http_x_forwarded_port -> "http_x_forwarded_port"
-      | `Http_x_forwarded_for -> "http_x_forwarded_for"
-      | `Server_name -> "server_name"
-      | `Server_port -> "server_port"
-      | `Remote_port -> "remote_port"
-      | `Remote_addr -> "remote_addr"
-      | `Server_protocol -> "server_protocol"
-      | `Other s -> String.lowercase s
-  in
+let string_of_header : header -> string = function
+  | `Http_cookie -> "http_cookie"
+  | `Http_accept_charset -> "http_accept_charset"
+  | `Http_accept_language -> "http_accept_language"
+  | `Http_accept_encoding -> "http_accept_encoding"
+  | `Http_referer -> "http_referer"
+  | `Http_accept -> "http_accept"
+  | `Http_content_type -> "http_content_type"
+  | `Http_content_md5 -> "http_content_md5"
+  | `Http_user_agent -> "http_user_agent"
+  | `Http_origin -> "http_origin"
+  | `Http_cache_control -> "http_cache_control"
+  | `Http_content_length -> "http_content_length"
+  | `Http_connection -> "http_connection"
+  | `Http_host -> "http_host"
+  | `Http_authorization -> "http_authorization"
+  | `Http_date -> "http_date"
+  | `Http_x_forwarded_proto -> "http_x_forwarded_proto"
+  | `Http_x_forwarded_port -> "http_x_forwarded_port"
+  | `Http_x_forwarded_for -> "http_x_forwarded_for"
+  | `Server_name -> "server_name"
+  | `Server_port -> "server_port"
+  | `Remote_port -> "remote_port"
+  | `Remote_addr -> "remote_addr"
+  | `Server_protocol -> "server_protocol"
+  | `Other s -> String.lowercase s
+
+
+let get_header headers header_name =
+  let s = string_of_header header_name in
   List.map snd
-    (List.find_all (fun (n, _) -> n = name) headers)
+    (List.find_all (fun (n, _) -> n = s) headers)
 
 let concat_query_values l =
   List.map (fun (k, vl) -> (k, String.concat "," vl)) l
 
-let make content_length meth uri headers content =
+let make meth uri headers content =
   let headers = List.map (fun (k, v) -> String.lowercase k, v) headers in
-  { content_length;
-    meth;
+  { meth;
     uri;
     headers = headers;
     content;
     get_params = concat_query_values (Uri.query uri);
     post_params =
       match meth with
-        | `POST when header' headers `Http_content_type = ["application/x-www-form-urlencoded"] ->
+        | `POST when get_header headers `Http_content_type
+                     = ["application/x-www-form-urlencoded"] ->
             concat_query_values (Uri.query_of_encoded content)
         | _ -> []
   }
 
-let to_string t =
-  let s lst = String.concat "; " (List.map (fun (n, v) -> Printf.sprintf "(\"%s\", \"%s\")" n v) lst) in
-  Lwt.return
-    (Printf.sprintf
-       "{ content_length: %d; meth: %s; uri: \"%s\"; headers: [ %s]; content: \"%s\"; get_params: [ %s]; post_params: [ %s] }"
-       t.content_length
-       (Http_method.to_string t.meth)
-       (Uri.to_string t.uri)
-       (s t.headers)
-       t.content
-       (s t.get_params)
-       (s t.post_params)
-    )
+let to_debug_string t =
+  let s lst =
+    String.concat "; "
+      (List.map (fun (n, v) -> Printf.sprintf "(\"%s\", \"%s\")" n v) lst) in
+  sprintf
+    "{ content_length: %d; meth: %s; uri: \"%s\"; headers: [ %s]; \
+       content: \"%s\"; get_params: [ %s]; post_params: [ %s] }"
+    (String.length t.content)
+    (Http_method.to_string t.meth)
+    (Uri.to_string t.uri)
+    (s t.headers)
+    t.content
+    (s t.get_params)
+    (s t.post_params)
+
 
 let of_stream stream =
-  lwt decoded = Netstring.decode stream in
+  Netstring.decode stream >>= fun decoded ->
   match Headers.of_string decoded with
     | ("CONTENT_LENGTH", content_length) :: rest ->
       (* CONTENT_LENGTH must be first header according to spec *)
-      lwt content_length =
-        try_lwt Lwt.return (int_of_string content_length)
-        with _ ->  raise_lwt (Failure ("Invalid content_length: [" ^ content_length ^ "]"))
+      let content_length =
+        try int_of_string content_length
+        with _ -> failwith ("Invalid content_length: [" ^ content_length ^ "]")
       in
       (* Process the remaining headers *)
       let (scgi, request_method, uri, headers) =
@@ -139,21 +143,39 @@ let of_stream stream =
             in
             let req =
               make
-                content_length
                 (Http_method.of_string request_method )
                 (Uri.of_string uri)
                 headers
                 content
             in
             return req
-        | ""   -> raise (Failure "Missing SCGI header")
-        | _    -> raise (Failure "Unexpected SCGI header")
+        | "" -> failwith "Missing SCGI header"
+        | _ -> failwith "Unexpected SCGI header"
       )
 
-    | (n, _) :: _ -> raise_lwt (Failure ("Expected CONTENT_LENGTH, but got [" ^ n ^ "]"))
-    | []          -> raise_lwt (Failure "No headers found")
+    | (n, _) :: _ -> failwith ("Expected CONTENT_LENGTH, but got [" ^ n ^ "]")
+    | [] -> failwith "No headers found"
 
-let content_length t = t.content_length
+
+let to_buffer buf x =
+  let headers = Buffer.create 1000 in
+  let add_header k v = bprintf headers "%s\x00%s\x00" k v in
+  add_header "CONTENT_LENGTH" (string_of_int (String.length x.content));
+  add_header "SCGI" "1";
+  add_header "REQUEST_METHOD" (Http_method.to_string x.meth);
+  add_header "REQUEST_URI" (Uri.to_string x.uri);
+  List.iter (fun (k, v) ->
+    add_header k v;
+  ) x.headers;
+  let header_string = Netstring.encode (Buffer.contents headers) in
+  bprintf buf "%s%s" header_string x.content
+
+let to_string x =
+  let buf = Buffer.create 1000 in
+  to_buffer buf x;
+  Buffer.contents buf
+
+let content_length t = String.length t.content
 let meth t = t.meth
 let uri t = t.uri
 let path t = Uri.path t.uri
@@ -175,10 +197,10 @@ let param_exn ?meth ?default t name =
 let params_get t = t.get_params
 let params_post t = t.post_params
 
-let header t name = header' t.headers name
+let header t name = get_header t.headers name
 
 let cookie t name =
-  match header' t.headers `Http_cookie with
+  match get_header t.headers `Http_cookie with
     | [] -> None
     | cookies :: _ ->
         try

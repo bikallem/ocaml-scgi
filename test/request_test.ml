@@ -2,10 +2,11 @@ open Test_common
 open Lwt
 open Scgi
 
-let tests =
-  ["cookies", (fun () ->
+let tests = [
+  "cookies", (fun () ->
     let make cookies =
-      Request.make 100 `GET (Uri.of_string "http://example.net") ["HTTP_COOKIE", cookies] ""
+      Request.make `GET
+        (Uri.of_string "http://example.net") ["HTTP_COOKIE", cookies] ""
     in
     let printer = string_option_printer in
     let r = make "uid=123456" in
@@ -16,5 +17,6 @@ let tests =
     assert_equal ~printer ~msg:"baz=biz" ~expected:(Some "biz") (Request.cookie r "baz") >>= fun () ->
     assert_equal ~printer ~msg:"bar=None" ~expected:None (Request.cookie r "bar")
   );
-  ]
-let _ = run tests
+]
+
+let () = run tests

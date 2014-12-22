@@ -41,7 +41,7 @@ type t =
     | `Custom_code of (int * string)
     ]
 
-let values = function
+let to_pair = function
   | `Ok                              -> 200, "OK"
   | `Created                         -> 201, "Created"
   | `Accepted                        -> 202, "Accepted"
@@ -81,5 +81,48 @@ let values = function
   | `Http_version_not_supported      -> 505, "HTTP Version Not Supported"
   | `Custom_code (code, name)        -> code, name
 
-let to_int    v = fst (values v)
-let to_string v = snd (values v)
+let values = to_pair
+
+let to_int    v = fst (to_pair v)
+let to_string v = snd (to_pair v)
+
+let of_pair (code, reason) =
+  match code with
+  | 200 -> `Ok
+  | 201 -> `Created
+  | 202 -> `Accepted
+  | 203 -> `Non_authoritative_information
+  | 204 -> `No_content
+  | 205 -> `Reset_content
+  | 206 -> `Partial_content
+  | 300 -> `Multiple_choices
+  | 301 -> `Moved_permanently
+  | 302 -> `Found
+  | 303 -> `See_other
+  | 304 -> `Not_modified
+  | 307 -> `Temporary_redirect
+  | 400 -> `Bad_request
+  | 401 -> `Unauthorized
+  | 402 -> `Payment_required
+  | 403 -> `Forbidden
+  | 404 -> `Not_found
+  | 405 -> `Method_not_allowed
+  | 406 -> `Not_acceptable
+  | 407 -> `Proxy_authentication_required
+  | 408 -> `Request_timeout
+  | 409 -> `Conflict
+  | 410 -> `Gone
+  | 411 -> `Length_required
+  | 412 -> `Precondition_failed
+  | 413 -> `Request_entity_too_large
+  | 414 -> `Request_uri_too_long
+  | 415 -> `Unsupported_media_type
+  | 416 -> `Requested_range_not_satisfiable
+  | 417 -> `Expectation_failed
+  | 500 -> `Internal_server_error
+  | 501 -> `Not_implemented
+  | 502 -> `Bad_gateway
+  | 503 -> `Service_unavailable
+  | 504 -> `Gateway_timeout
+  | 505 -> `Http_version_not_supported
+  | code -> `Custom_code (code, reason)

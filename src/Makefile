@@ -1,11 +1,35 @@
 NAME = scgi
-SRCS := $(shell ls *.ml | grep -v myocamlbuild | xargs)
-MLI_SRCS = $(shell ls *.ml | grep -v myocamlbuild | grep -v compatability | xargs)
-CMAS := $(NAME).cma
-CMXAS := $(NAME).cmxa
+ML = \
+  compatibility.ml \
+  http_header.ml \
+  http_status.ml \
+  netstring.ml \
+  response.ml \
+  headers.ml \
+  http_method.ml \
+  request.ml \
+  server.ml \
+  client.ml
+
+MLI = \
+  http_header.mli \
+  http_status.mli \
+  netstring.mli \
+  response.mli \
+  headers.mli \
+  http_method.mli \
+  request.mli \
+  server.mli \
+  client.mli
+
+CMAS = $(NAME).cma
+CMXAS = $(NAME).cmxa
 LIBS = $(CMAS) $(CMXAS)
-MLIS = $(MLI_SRCS:.ml=.mli)
-BUILD = $(addprefix _build/,$(LIBS)) $(addprefix _build/,$(MLIS)) _build/$(NAME).cmi _build/$(NAME).a
+BUILD = \
+  $(addprefix _build/,$(LIBS)) \
+  $(addprefix _build/,$(MLI)) \
+  _build/$(NAME).cmi \
+  _build/$(NAME).a
 
 .PHONY: all install uninstall clean
 
@@ -23,4 +47,4 @@ clean:
 	ocamlbuild -clean
 
 $(NAME).mlpack:
-	echo $(SRCS) | perl -pe 's/ /\n/g'  | perl -pe 's/^./\U$$&/g' | sed -e "s/\.ml//g" | grep -v myocamlbuild | sort > $@
+	for x in $(ML); do basename $$x .ml | sed -e 's/^./\U\0/' ; done > $@
