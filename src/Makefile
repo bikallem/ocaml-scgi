@@ -33,7 +33,7 @@ BUILD = \
 
 .PHONY: all install uninstall clean
 
-all: $(NAME).mlpack
+all:
 	ocamlbuild -tag debug $(LIBS)
 
 install:
@@ -43,8 +43,4 @@ uninstall:
 	ocamlfind remove $(NAME)
 
 clean:
-	rm -f $(NAME).mlpack
 	ocamlbuild -clean
-
-$(NAME).mlpack:
-	for x in $(ML); do basename $$x .ml | sed -e 's/^./\U\0/' ; done > $@
