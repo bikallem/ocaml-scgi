@@ -96,18 +96,17 @@ let to_debug_string t =
   let s lst =
     String.concat "; "
       (List.map (fun (n, v) -> Printf.sprintf "(\"%s\", \"%s\")" n v) lst) in
-  return
-    (sprintf
-       "{ content_length: %d; meth: %s; uri: \"%s\"; headers: [ %s]; \
-          content: \"%s\"; get_params: [ %s]; post_params: [ %s] }"
-       (String.length t.content)
-       (Http_method.to_string t.meth)
-       (Uri.to_string t.uri)
-       (s t.headers)
-       t.content
-       (s t.get_params)
-       (s t.post_params)
-    )
+  sprintf
+    "{ content_length: %d; meth: %s; uri: \"%s\"; headers: [ %s]; \
+       content: \"%s\"; get_params: [ %s]; post_params: [ %s] }"
+    (String.length t.content)
+    (Http_method.to_string t.meth)
+    (Uri.to_string t.uri)
+    (s t.headers)
+    t.content
+    (s t.get_params)
+    (s t.post_params)
+
 
 let of_stream stream =
   Netstring.decode stream >>= fun decoded ->

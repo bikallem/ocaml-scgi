@@ -49,4 +49,4 @@ val params_post : t -> (string * string) list
 val header : t -> header -> string list
 val cookie : t -> string -> string option
 
-val to_debug_string : t -> string Lwt.t
+val to_debug_string : t -> string
