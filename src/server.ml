@@ -6,6 +6,7 @@ type port = int
 type socket_filename = string
 
 let default_read_timeout = 60.
+let default_processing_timeout = 300.
 let default_write_timeout = 60.
 
 let default_read_error_handler exn =
@@ -33,6 +34,7 @@ let with_timeout timeout x =
 *)
 let handle_connection
     ~read_timeout
+    ~processing_timeout
     ~write_timeout
     ~read_error_handler
     ~write_error_handler
@@ -92,8 +94,13 @@ let handle_connection
   catch
     (fun () ->
        catch
-         process_request
-         read_error_handler
+         (fun () ->
+            with_timeout processing_timeout (process_request ())
+         )
+         (fun e ->
+            write_error_handler e >>= fun () ->
+            raise Exit
+         )
        >>= fun response ->
 
        catch
@@ -107,12 +114,14 @@ let handle_connection
        close_connection ()
     )
     (fun _e ->
+       (* catch Exit or exceptions raised by custom error handlers *)
        close_connection ()
     )
 
 
 let handler
     ~read_timeout
+    ~processing_timeout
     ~write_timeout
     ~read_error_handler
     ~write_error_handler
@@ -124,6 +133,7 @@ let handler
     ignore_result (
       handle_connection
         ~read_timeout
+        ~processing_timeout
         ~write_timeout
         ~read_error_handler
         ~write_error_handler
@@ -134,6 +144,7 @@ let handler
 
 let handler_inet
     ?(read_timeout = default_read_timeout)
+    ?(processing_timeout = default_processing_timeout)
     ?(write_timeout = default_write_timeout)
     ?(read_error_handler = default_read_error_handler)
     ?(write_error_handler = default_write_error_handler)
@@ -143,6 +154,7 @@ let handler_inet
     f =
     handler
       ~read_timeout
+      ~processing_timeout
       ~write_timeout
       ~read_error_handler
       ~write_error_handler
@@ -151,6 +163,7 @@ let handler_inet
 
 let handler_sock
     ?(read_timeout = default_read_timeout)
+    ?(processing_timeout = default_processing_timeout)
     ?(write_timeout = default_write_timeout)
     ?(read_error_handler = default_read_error_handler)
     ?(write_error_handler = default_write_error_handler)
@@ -159,6 +172,7 @@ let handler_sock
     f =
     handler
       ~read_timeout
+      ~processing_timeout
       ~write_timeout
       ~read_error_handler
       ~write_error_handler
