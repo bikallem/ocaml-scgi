@@ -22,7 +22,7 @@ MLI = \
   server.mli \
   client.mli
 
-CMX = $(ML:.ml=.cmx)
+CMX = $(NAME).cmx
 CMAS = $(NAME).cma
 CMXAS = $(NAME).cmxa
 LIBS = $(CMAS) $(CMXAS)
