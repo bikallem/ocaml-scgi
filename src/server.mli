@@ -14,7 +14,7 @@ val handler_inet :
   inet_addr ->
   port ->
   (Request.t -> Response.t Lwt.t) ->
-  Lwt_io.server
+  Lwt_io.server Lwt.t
   (**
      Launch an SCGI server listening on an Internet socket.
   *)
@@ -28,7 +28,7 @@ val handler_sock :
   server_name ->
   socket_filename ->
   (Request.t -> Response.t Lwt.t) ->
-  Lwt_io.server
+  Lwt_io.server Lwt.t
   (**
      Launch an SCGI server listening on a Unix-domain socket.
      You may want to block the SIGPIPE signal

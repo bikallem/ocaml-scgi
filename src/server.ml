@@ -129,16 +129,14 @@ let handler
     ~name
     f =
 
-  Lwt_io.establish_server sockaddr (fun (ic, oc) ->
-    ignore_result (
-      handle_connection
-        ~read_timeout
-        ~processing_timeout
-        ~write_timeout
-        ~read_error_handler
-        ~write_error_handler
-        f ic oc
-    )
+  Lwt_io.Versioned.establish_server_2 sockaddr (fun (ic, oc) ->
+    handle_connection
+      ~read_timeout
+      ~processing_timeout
+      ~write_timeout
+      ~read_error_handler
+      ~write_error_handler
+      f ic oc
   )
 
 
