@@ -22,12 +22,14 @@ MLI = \
   server.mli \
   client.mli
 
+CMX = $(ML:.ml=.cmx)
 CMAS = $(NAME).cma
 CMXAS = $(NAME).cmxa
 LIBS = $(CMAS) $(CMXAS)
 BUILD = \
   $(addprefix _build/,$(LIBS)) \
   $(addprefix _build/,$(MLI)) \
+  $(addprefix _build/,$(CMX)) \
   _build/$(NAME).cmi \
   _build/$(NAME).a
 
