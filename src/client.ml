@@ -10,7 +10,8 @@ let status_re = Str.regexp "^\\([0-9][0-9][0-9]\\) \\(.*\\)$"
 let parse_header s =
   match Str.string_match header_re s 0 with
   | false -> failwith "Malformed header"
-  | true -> String.lowercase (Str.matched_group 1 s), Str.matched_group 2 s
+  | true ->
+      String.lowercase_ascii (Str.matched_group 1 s), Str.matched_group 2 s
 
 let read_header ic =
   Lwt_io.read_line ic >>= function

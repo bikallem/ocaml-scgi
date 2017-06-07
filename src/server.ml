@@ -129,7 +129,7 @@ let handler
     ~name
     f =
 
-  Lwt_io.Versioned.establish_server_2 sockaddr (fun (ic, oc) ->
+  Lwt_io.establish_server sockaddr (fun (ic, oc) ->
     handle_connection
       ~read_timeout
       ~processing_timeout
