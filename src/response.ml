@@ -36,6 +36,6 @@ let to_debug_string ?(body_max=1000) t =
     (Http_status.to_string t.status)
     headers_str
     (match t.body with
-     | `String b -> String.sub b 0 (min (String.length b) body_max)
-     | `Stream (Some c, _) -> Printf.sprintf "stream of %d bytes length" c
-     | `Stream _ -> "[stream of unknown length]")
+    | `String b -> String.sub b 0 (min (String.length b) body_max)
+    | `Stream (Some c, _) -> Printf.sprintf "stream of %d bytes length" c
+    | `Stream _ -> "[stream of unknown length]")

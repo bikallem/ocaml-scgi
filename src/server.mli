@@ -13,9 +13,9 @@ val handler_inet :
   port ->
   (Request.t -> Response.t Lwt.t) ->
   Lwt_io.server Lwt.t
-  (**
-     Launch an SCGI server listening on an Internet socket.
-  *)
+(**
+   Launch an SCGI server listening on an Internet socket.
+*)
 
 val handler_sock :
   ?read_timeout: float (* default: 60. seconds *) ->
@@ -25,10 +25,10 @@ val handler_sock :
   socket_filename ->
   (Request.t -> Response.t Lwt.t) ->
   Lwt_io.server Lwt.t
-  (**
-     Launch an SCGI server listening on a Unix-domain socket.
-     You may want to block the SIGPIPE signal
-     with [Sys.set_signal Sys.sigpipe Sys.Signal_ignore]
-     in order to avoid process termination with exit code 141 (on Linux
-     at least) when a client closes its connection too early.
-  *)
+(**
+   Launch an SCGI server listening on a Unix-domain socket.
+   You may want to block the SIGPIPE signal
+   with [Sys.set_signal Sys.sigpipe Sys.Signal_ignore]
+   in order to avoid process termination with exit code 141 (on Linux
+   at least) when a client closes its connection too early.
+*)

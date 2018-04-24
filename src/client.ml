@@ -11,7 +11,7 @@ let parse_header s =
   match Str.string_match header_re s 0 with
   | false -> failwith "Malformed header"
   | true ->
-      String.lowercase_ascii (Str.matched_group 1 s), Str.matched_group 2 s
+    String.lowercase_ascii (Str.matched_group 1 s), Str.matched_group 2 s
 
 let read_header ic =
   Lwt_io.read_line ic >>= function
@@ -22,9 +22,9 @@ let parse_status_value s =
   match Str.string_match status_re s 0 with
   | false -> failwith "Malformed status header"
   | true ->
-      let code = int_of_string (Str.matched_group 1 s) in
-      let reason = Str.matched_group 2 s in
-      Http_status.of_pair (code, reason)
+    let code = int_of_string (Str.matched_group 1 s) in
+    let reason = Str.matched_group 2 s in
+    Http_status.of_pair (code, reason)
 
 let read_cgi_status ic =
   read_header ic >>= function
@@ -54,9 +54,9 @@ let receive_response sock =
   sock_receive sock
 
 let request_inet
-  ~server_name
-  ~port
-  req =
+    ~server_name
+    ~port
+    req =
 
   let sock = Lwt_unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
   let finally_ () = Lwt_unix.close sock in
@@ -79,8 +79,8 @@ let request_inet
     )
 
 let request_sock
-  ~socket_filename
-  req =
+    ~socket_filename
+    req =
 
   let sock = Lwt_unix.socket Unix.PF_UNIX Unix.SOCK_STREAM 0 in
   let finally_ () = Lwt_unix.close sock in

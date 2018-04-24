@@ -33,8 +33,8 @@ val make : Http_method.t -> Uri.t -> Headers.t -> string -> t
 val of_stream : char Lwt_stream.t -> t Lwt.t
 
 val to_string : t -> string
-  (* to_string now produces a valid SCGI request string.
-     Use to_debug_string for a human-readable representation. *)
+(* to_string now produces a valid SCGI request string.
+   Use to_debug_string for a human-readable representation. *)
 
 val content_length : t -> int
 val meth : t -> Http_method.t

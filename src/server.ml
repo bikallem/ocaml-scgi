@@ -37,7 +37,7 @@ let handle_connection
     ~read_timeout
     ~processing_timeout
     ~write_timeout
-(*    ~read_error_handler *)
+    (*    ~read_error_handler *)
     ~write_error_handler
     f inch ouch =
 
@@ -68,11 +68,11 @@ let handle_connection
       else
         match response.body with
         | `Stream (Some l, _) ->
-            `Content_length l :: response.headers
+          `Content_length l :: response.headers
         | `String s ->
-            `Content_length (String.length s) :: response.headers
+          `Content_length (String.length s) :: response.headers
         | `Stream (None, _) ->
-            response.headers
+          response.headers
     in
 
     (* Write headers *)
@@ -86,8 +86,8 @@ let handle_connection
 
     (* Write the body *)
     (match response.body with
-     | `Stream (_, s) -> Lwt_io.write_chars ouch s
-     | `String s      -> Lwt_io.write ouch s
+    | `Stream (_, s) -> Lwt_io.write_chars ouch s
+    | `String s      -> Lwt_io.write ouch s
     ) >>= fun () ->
     Lwt_io.flush ouch
   in
@@ -129,14 +129,14 @@ let handler
     f =
 
   Lwt_io.establish_server_with_client_address sockaddr (fun _client_address (ic, oc) ->
-    handle_connection
-      ~read_timeout
-      ~processing_timeout
-      ~write_timeout
-    (*  ~read_error_handler *)
-      ~write_error_handler
-      f ic oc
-  )
+      handle_connection
+        ~read_timeout
+        ~processing_timeout
+        ~write_timeout
+        (*  ~read_error_handler *)
+        ~write_error_handler
+        f ic oc
+    )
 
 
 let handler_inet
@@ -147,13 +147,13 @@ let handler_inet
     inet_addr
     port
     f =
-    handler
-      ~read_timeout
-      ~processing_timeout
-      ~write_timeout
-      ~write_error_handler
-      ~sockaddr: (Unix.ADDR_INET (Unix.inet_addr_of_string inet_addr, port))
-      f
+  handler
+    ~read_timeout
+    ~processing_timeout
+    ~write_timeout
+    ~write_error_handler
+    ~sockaddr: (Unix.ADDR_INET (Unix.inet_addr_of_string inet_addr, port))
+    f
 
 let handler_sock
     ?(read_timeout = default_read_timeout)
@@ -162,10 +162,10 @@ let handler_sock
     ?(write_error_handler = default_write_error_handler)
     socket_filename
     f =
-    handler
-      ~read_timeout
-      ~processing_timeout
-      ~write_timeout
-      ~write_error_handler
-      ~sockaddr: (Unix.ADDR_UNIX socket_filename)
-      f
+  handler
+    ~read_timeout
+    ~processing_timeout
+    ~write_timeout
+    ~write_error_handler
+    ~sockaddr: (Unix.ADDR_UNIX socket_filename)
+    f
