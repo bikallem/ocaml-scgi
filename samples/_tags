@@ -1,3 +1,0 @@
-<**/*.ml*> : syntax_camlp4o,pkg_lwt,pkg_lwt.syntax,pkg_scgi
-
-<*/**.byte> : pkg_lwt,pkg_scgi

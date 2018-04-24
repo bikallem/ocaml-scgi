@@ -24,11 +24,11 @@ let () =
     "try --help";
 
   (* Start the handler *)
-  let _server = Server.handler_inet "hello" !addr !port (fun r ->
+  let _server = Server.handler_inet !addr !port (fun r ->
       Lwt.return
         { Response.status = `Ok;
           headers = [`Content_type "text/plain"];
-          body = `String ("Hello world: " ^ Request.path r);
+          body = `String ("Hello world from Ocaml SCGI. The request path is: " ^ Request.path r);
         }
     ) in
 
