@@ -181,13 +181,13 @@ let uri t = t.uri
 let path t = Uri.path t.uri
 let contents t = t.content
 
-let param ?meth t name =
+let param t name =
   match List.Exceptionless.assoc name t.get_params with
     | None -> List.Exceptionless.assoc name t.post_params
     | r -> r
 
-let param_exn ?meth ?default t name =
-  match param ?meth t name with
+let param_exn ?default t name =
+  match param t name with
     | Some x -> x
     | None ->
         match default with

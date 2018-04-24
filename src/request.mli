@@ -41,9 +41,8 @@ val meth : t -> Http_method.t
 val uri : t -> Uri.t
 val path : t -> string
 val contents : t -> string
-val param : ?meth:[ `GET | `POST ] -> t -> string -> string option
-val param_exn :
-  ?meth:[ `GET | `POST ] -> ?default:string -> t -> string -> string
+val param : t -> string -> string option
+val param_exn : ?default:string -> t -> string -> string
 val params_get : t -> (string * string) list
 val params_post : t -> (string * string) list
 val header : t -> header -> string list

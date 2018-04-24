@@ -1,0 +1,18 @@
+opam-version : "1.2"
+maintainer : "gbikal@gmail.com"
+authors : ["Bikal Lem"]
+homepage : "https://github.com/bikallem/ocaml-scgi"
+bug-reports :  "https://github.com/bikallem/ocaml-scgi/issues"
+dev-repo: "https://github.com/bikallem/ocaml-scgi.git"
+
+build: [["jbuilder" "build" "-p" name "-j" jobs]]
+
+build-test: [["jbuilder" "runtest" "-p" name]]
+
+depends : [
+	"jbuilder" {build}
+	"lwt"
+	"lwt_camlp4"
+	"uri"
+	"batteries"
+] 
