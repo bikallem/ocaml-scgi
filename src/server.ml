@@ -9,25 +9,13 @@ let default_read_timeout = 60.
 let default_processing_timeout = 300.
 let default_write_timeout = 60.
 
-(*let default_read_error_handler exn =
-  let backtrace = Printexc.get_backtrace () in
-  prerr_endline (Printexc.to_string exn ^ "\n" ^ backtrace);
-  return {
-    Response.status = `Internal_server_error;
-    headers = [`Content_type "text/plain"];
-    body = `String (Printexc.to_string exn);
-  }
-*)
-
 let default_write_error_handler exn =
   let backtrace = Printexc.get_backtrace () in
   prerr_endline (Printexc.to_string exn ^ "\n" ^ backtrace);
   return ()
 
-
 let with_timeout timeout x =
   Lwt.pick [Lwt_unix.timeout timeout; x]
-
 
 (*
    Handle a connection.
@@ -37,7 +25,6 @@ let handle_connection
     ~read_timeout
     ~processing_timeout
     ~write_timeout
-    (*    ~read_error_handler *)
     ~write_error_handler
     f inch ouch =
 
@@ -119,7 +106,6 @@ let handle_connection
        close_connection ()
     )
 
-
 let handler
     ~read_timeout
     ~processing_timeout
@@ -127,17 +113,14 @@ let handler
     ~write_error_handler
     ~sockaddr
     f =
-
   Lwt_io.establish_server_with_client_address sockaddr (fun _client_address (ic, oc) ->
       handle_connection
         ~read_timeout
         ~processing_timeout
         ~write_timeout
-        (*  ~read_error_handler *)
         ~write_error_handler
         f ic oc
     )
-
 
 let handler_inet
     ?(read_timeout = default_read_timeout)
