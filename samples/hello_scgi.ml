@@ -10,6 +10,7 @@ let () =
   (* Command line options *)
   let port = ref 8080 in
   let addr = ref "127.0.0.1" in
+  let req_count = ref 0 in 
 
   Arg.parse
     (Arg.align [
@@ -25,10 +26,13 @@ let () =
 
   (* Start the handler *)
   let _server = Server.handler_inet !addr !port (fun r ->
+    incr req_count;
+    let s = string_of_int !req_count in 
+    let body = Printf.sprintf "%s. Hello world from Ocaml SCGI. The request path is: %s" s (Request.path r) in 
       Lwt.return
         { Response.status = `Ok;
           headers = [`Content_type "text/plain"];
-          body = `String ("Hello world from Ocaml SCGI. The request path is: " ^ Request.path r);
+          body = `String body 
         }
     ) in
 
