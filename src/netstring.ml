@@ -17,15 +17,14 @@ let decode stream =
   if size > Sys.max_string_length then
     Lwt.fail (Failure "Too big")
   else
-    (let%lwt chars = Lwt_stream.nget size stream in
-     Lwt_stream.get stream >>= function
-     | Some ',' ->
-       let b = Buffer.create size in
-       List.iter (Buffer.add_char b) chars;
-       Lwt.return (Buffer.contents b)
-     | Some c   -> Lwt.fail (Failure (Printf.sprintf "Expected comma, but got %c" c))
-     | None     -> Lwt.fail (Failure "Empty when comma expected")
-    )
+    let%lwt chars = Lwt_stream.nget size stream in
+    Lwt_stream.get stream >>= function
+    | Some ',' ->
+      let b = Buffer.create size in
+      List.iter (Buffer.add_char b) chars;
+      Lwt.return (Buffer.contents b)
+    | Some c   -> Lwt.fail (Failure (Printf.sprintf "Expected comma, but got %c" c))
+    | None     -> Lwt.fail (Failure "Empty when comma expected")
 
 (** Encode a netstring *)
 let encode s = string_of_int (String.length s) ^ ":" ^ s ^ ","

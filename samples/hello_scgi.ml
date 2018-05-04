@@ -26,9 +26,9 @@ let () =
 
   (* Start the handler *)
   let _server = Server.handler_inet !addr !port (fun r ->
-    incr req_count;
-    let s = string_of_int !req_count in 
-    let body = Printf.sprintf "%s. Hello world from Ocaml SCGI. The request path is: %s" s (Request.path r) in 
+      incr req_count;
+      let s = string_of_int !req_count in 
+      let body = Printf.sprintf "%s. Hello world from Ocaml SCGI. The request path is: %s" s (Request.path r) in 
       Lwt.return
         { Response.status = `Ok;
           headers = [`Content_type "text/plain"];
