@@ -2,4 +2,5 @@
 
 (executable
     ((name hello_scgi)
-    (libraries (scgi lwt.unix))))
+     (modules (hello_scgi))
+     (libraries (scgi lwt.unix))))

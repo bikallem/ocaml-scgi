@@ -4,4 +4,4 @@
 	((name scgi)
 	(public_name scgi)
 	(preprocess (pps (lwt.ppx)))
-	(libraries (lwt.ppx uri batteries lwt lwt.unix))))
+	(libraries (lwt.ppx uri lwt lwt.unix))))

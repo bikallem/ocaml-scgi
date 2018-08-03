@@ -1,8 +1,8 @@
 all:
-	jbuilder build --dev
+	jbuilder build
 
 tests:
-	jbuilder runtest --dev
+	jbuilder runtest
 
 clean:
 	jbuilder clean

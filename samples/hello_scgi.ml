@@ -8,7 +8,7 @@ open Lwt
 
 let () =
   (* Command line options *)
-  let port = ref 8080 in
+  let port = ref 1025 in
   let addr = ref "127.0.0.1" in
   let req_count = ref 0 in 
 
