@@ -1,22 +1,19 @@
 all:
-	jbuilder build
+	dune build
 
 tests:
-	jbuilder runtest
+	dune runtest
 
 clean:
-	jbuilder clean
+	dune clean
 
 indent:
 	ocp-indent -i src/*.ml
 	ocp-indent -i src/*.mli
 	ocp-indent -i samples/*.ml
-	jbuilder build --dev
+	dune build --dev
 
 utop:
-	jbuilder utop lib 
-
-#all-supported-ocaml-versions:
-#	$(JBUILDER) runtest --dev --workspace jbuild-workspace.dev
+	dune utop lib 
 
 .PHONY: all tests clean check indent-build utop
