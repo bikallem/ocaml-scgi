@@ -1,0 +1,5 @@
+(library
+ (name scgi)
+ (public_name scgi)
+ (preprocess (pps lwt_ppx))
+ (libraries lwt_ppx uri lwt lwt.unix))

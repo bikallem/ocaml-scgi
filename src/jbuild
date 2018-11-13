@@ -1,7 +1,0 @@
-(jbuild_version 1)
-
-(library
-	((name scgi)
-	(public_name scgi)
-	(preprocess (pps (lwt.ppx)))
-	(libraries (lwt.ppx uri batteries lwt lwt.unix))))

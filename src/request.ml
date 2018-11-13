@@ -2,7 +2,6 @@
 
 open Printf
 open Lwt
-open Batteries
 
 type t = {
   meth : Http_method.t;
@@ -66,7 +65,7 @@ let string_of_header : header -> string = function
 | `Remote_port -> "remote_port"
 | `Remote_addr -> "remote_addr"
 | `Server_protocol -> "server_protocol"
-| `Other s -> String.lowercase s
+| `Other s -> String.lowercase_ascii s
 
 
 let get_header headers header_name =
@@ -78,7 +77,7 @@ let concat_query_values l =
   List.map (fun (k, vl) -> (k, String.concat "," vl)) l
 
 let make meth uri headers content =
-  let headers = List.map (fun (k, v) -> String.lowercase k, v) headers in
+  let headers = List.map (fun (k, v) -> String.lowercase_ascii k, v) headers in
   { meth;
     uri;
     headers = headers;
@@ -182,8 +181,8 @@ let path t = Uri.path t.uri
 let contents t = t.content
 
 let param t name =
-  match List.Exceptionless.assoc name t.get_params with
-  | None -> List.Exceptionless.assoc name t.post_params
+    match List.assoc_opt name t.get_params with
+  | None -> List.assoc_opt name t.post_params
   | r -> r
 
 let param_exn ?default t name =
@@ -199,12 +198,18 @@ let params_post t = t.post_params
 
 let header t name = get_header t.headers name
 
-let cookie t name =
+let cookie t (name : string) : string option =
   match get_header t.headers `Http_cookie with
   | [] -> None
   | cookies :: _ ->
     try
-      Some (String.nsplit ~by:"; " cookies
-            |> List.map (String.split ~by:"=")
-            |> List.assoc name)
+      let split_cookies = Str.split (Str.regexp "; ") cookies in
+      let cookie_pairs =
+        List.map
+          (fun cookie ->
+             match Str.split (Str.regexp "=") cookie with
+             | [k; v] -> (k,v)
+             | _ -> raise Not_found)
+          split_cookies in
+      Some (List.assoc name cookie_pairs)
     with Not_found -> None
