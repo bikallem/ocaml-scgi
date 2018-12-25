@@ -63,7 +63,7 @@ let run_tests () =
 let create_server request_handler =
   if Sys.file_exists socket_filename then
     Sys.remove socket_filename;
-  Scgi.Server.handler_sock "sock" socket_filename request_handler
+  Scgi.Server.handler_sock socket_filename request_handler
 
 let main () =
   Printexc.record_backtrace true;
