@@ -1,7 +1,7 @@
-default:
+build:
 	dune build
 
-build:
+fmt:
 	dune build @fmt --auto-promote
 
 tests: build
@@ -10,14 +10,14 @@ tests: build
 clean:
 	dune clean
 
-utop: default
-	dune utop src 
+utop: build
+	dune utop src
 
-install: default
+install: build
 	dune install scgi
 
 uninstall: install
-	dune uninstall scgi 
+	dune uninstall scgi
 
-.PHONY: default build tests clean utop install uninstall
+.PHONY: build fmt tests clean utop install uninstall
 
