@@ -1,19 +1,23 @@
-all:
+default:
 	dune build
 
-tests:
+build:
+	dune build @fmt --auto-promote
+
+tests: build
 	dune runtest
 
 clean:
 	dune clean
 
-indent:
-	ocp-indent -i src/*.ml
-	ocp-indent -i src/*.mli
-	ocp-indent -i samples/*.ml
-	dune build --dev
+utop: default
+	dune utop src 
 
-utop:
-	dune utop lib 
+install: default
+	dune install scgi
 
-.PHONY: all tests clean check indent-build utop
+uninstall: install
+	dune uninstall scgi 
+
+.PHONY: default build tests clean utop install uninstall
+

@@ -1,16 +1,22 @@
 opam-version : "1.2"
-maintainer : "gbikal@gmail.com"
-authors : ["Bikal Lem"]
+maintainer : "Bikal Lem <gbikal @gmail.com>"
+authors : [
+  "Mike Wells <https://github.com/mwells>"
+  "Martin Jambon <https://github.com/mjambon>"
+  "Bikal Lem <https://github.com/bikallem>"
+]
 homepage : "https://github.com/bikallem/ocaml-scgi"
 bug-reports :  "https://github.com/bikallem/ocaml-scgi/issues"
 dev-repo: "https://github.com/bikallem/ocaml-scgi.git"
+tags: ["scgi" "web application"]
+license: "BSD"
 
-build: [["jbuilder" "build" "-p" name "-j" jobs]]
-
-build-test: [["jbuilder" "runtest" "-p" name]]
-
+build: [make "default"] 
+install: [make "install"]
+remove: [make "uninstall"]
 depends : [
-	"jbuilder" {build}
+	"dune" {build}
 	"lwt"
+  "lwt_ppx"
 	"uri"
 ] 
