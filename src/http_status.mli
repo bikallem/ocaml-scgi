@@ -4,7 +4,7 @@ type t =
   | `Bad_request
   | `Conflict
   | `Created
-  | `Custom_code of (int * string)
+  | `Custom_code of int * string
   | `Expectation_failed
   | `Forbidden
   | `Found
@@ -39,11 +39,11 @@ type t =
   | `Unsupported_media_type ]
 
 val of_pair : int * string -> t
-
 val to_pair : t -> int * string
 val to_int : t -> int
 val to_string : t -> string
 
 (**/**)
+
 val values : t -> int * string
 (* deprecated; same as to_pair *)
