@@ -81,7 +81,9 @@ let to_pair = function
   | `Custom_code (code, name) -> (code, name)
 
 let values = to_pair
+
 let to_int v = fst (to_pair v)
+
 let to_string v = snd (to_pair v)
 
 let of_pair (code, reason) =

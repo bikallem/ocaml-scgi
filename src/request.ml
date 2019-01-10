@@ -160,9 +160,13 @@ let to_string x =
   to_buffer buf x ; Buffer.contents buf
 
 let content_length t = String.length t.content
+
 let meth t = t.meth
+
 let uri t = t.uri
+
 let path t = Uri.path t.uri
+
 let contents t = t.content
 
 let param t name =
@@ -176,7 +180,9 @@ let param_exn ?default t name =
   | None -> ( match default with Some x -> x | None -> raise Not_found )
 
 let params_get t = t.get_params
+
 let params_post t = t.post_params
+
 let header t name = get_header t.headers name
 
 let cookie t (name : string) : string option =

@@ -12,7 +12,9 @@ let make ~status ?(headers = []) ?(body = `String "") () =
   {status; headers; body}
 
 let status_int t = Http_status.to_int t.status
+
 let status_string t = Http_status.to_string t.status
+
 let add_header header t = {t with headers= header :: t.headers}
 
 let to_debug_string ?(body_max = 1000) t =

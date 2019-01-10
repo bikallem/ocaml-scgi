@@ -13,6 +13,9 @@ val make :
   -> t
 
 val status_int : t -> int
+
 val status_string : t -> string
+
 val add_header : Http_header.t -> t -> t
+
 val to_debug_string : ?body_max:int -> t -> string

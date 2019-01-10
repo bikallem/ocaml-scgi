@@ -1,7 +1,8 @@
 open Printf
 open Lwt
 
-let socket_filename = "ocaml-scgi-test.sock"
+let socket_filename = "/tmp/ocaml-scgi-test.sock"
+
 let pf = Printf.printf
 
 let request_handler req =
@@ -22,6 +23,7 @@ let test_hello () =
   let req = Scgi.Request.make `GET (Uri.of_string "/hello") [] "" in
   Scgi.Client.request_sock ~socket_filename req
   >>= fun resp ->
+  pf "go response\n" ;
   assert (resp.Scgi.Response.status = `Ok) ;
   assert (resp.Scgi.Response.body = `String "Hello") ;
   return true

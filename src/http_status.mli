@@ -39,8 +39,11 @@ type t =
   | `Unsupported_media_type ]
 
 val of_pair : int * string -> t
+
 val to_pair : t -> int * string
+
 val to_int : t -> int
+
 val to_string : t -> string
 
 (**/**)

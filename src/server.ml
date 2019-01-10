@@ -1,12 +1,17 @@
 open Lwt
 
 type server_name = string
+
 type inet_addr = string
+
 type port = int
+
 type socket_filename = string
 
 let default_read_timeout = 60.
+
 let default_processing_timeout = 300.
+
 let default_write_timeout = 60.
 
 let default_write_error_handler exn =
