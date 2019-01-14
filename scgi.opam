@@ -10,8 +10,9 @@ bug-reports :  "https://github.com/bikallem/ocaml-scgi/issues"
 dev-repo: "https://github.com/bikallem/ocaml-scgi.git"
 tags: ["scgi" "web application"]
 license: "BSD"
+synopsis: "Simple Common Gateway Interface (SCGI) protocol support for interface with HTTP servers"
 
-build: [make "default"] 
+build: [make "build"]
 install: [make "install"]
 remove: [make "uninstall"]
 depends : [
@@ -19,4 +20,4 @@ depends : [
 	"lwt"
   "lwt_ppx"
 	"uri"
-] 
+]
