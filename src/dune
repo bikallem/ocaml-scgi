@@ -1,4 +1,5 @@
 (library
+ (synopsis "Simple Common Gateway Interface (SCGI) protocol support for interface with HTTP servers")
  (name scgi)
  (public_name scgi)
  (preprocess (pps lwt_ppx))
