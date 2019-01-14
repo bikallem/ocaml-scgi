@@ -78,24 +78,54 @@ let handle_connection ~read_timeout ~processing_timeout ~write_timeout
       (* catch Exit or exceptions raised by custom error handlers *)
       close_connection () )
 
-let handler ~read_timeout ~processing_timeout ~write_timeout
-    ~write_error_handler ~sockaddr f =
-  Lwt_io.establish_server_with_client_address sockaddr
-    (fun _client_address (ic, oc) ->
-      handle_connection ~read_timeout ~processing_timeout ~write_timeout
-        ~write_error_handler f ic oc )
+let handler
+    ~read_timeout
+    ~processing_timeout
+    ~write_timeout
+    ~write_error_handler
+    ~sockaddr
+    ?fd ?buffer_size ?backlog ?no_close
+    f =
+  Lwt_io.establish_server_with_client_address
+    ?fd ?buffer_size ?backlog ?no_close
+    sockaddr (fun _client_address (ic, oc) ->
+      handle_connection
+        ~read_timeout
+        ~processing_timeout
+        ~write_timeout
+        ~write_error_handler
+        f ic oc
+    )
 
 let handler_inet ?(read_timeout = default_read_timeout)
     ?(processing_timeout = default_processing_timeout)
     ?(write_timeout = default_write_timeout)
-    ?(write_error_handler = default_write_error_handler) inet_addr port f =
-  handler ~read_timeout ~processing_timeout ~write_timeout ~write_error_handler
-    ~sockaddr:(Unix.ADDR_INET (Unix.inet_addr_of_string inet_addr, port))
+    ?(write_error_handler = default_write_error_handler)
+    ?fd ?buffer_size ?backlog ?no_close
+    inet_addr
+    port
+    f =
+  handler
+    ~read_timeout
+    ~processing_timeout
+    ~write_timeout
+    ~write_error_handler
+    ~sockaddr: (Unix.ADDR_INET (Unix.inet_addr_of_string inet_addr, port))
+    ?fd ?buffer_size ?backlog ?no_close
     f
 
 let handler_sock ?(read_timeout = default_read_timeout)
     ?(processing_timeout = default_processing_timeout)
     ?(write_timeout = default_write_timeout)
-    ?(write_error_handler = default_write_error_handler) socket_filename f =
-  handler ~read_timeout ~processing_timeout ~write_timeout ~write_error_handler
-    ~sockaddr:(Unix.ADDR_UNIX socket_filename) f
+    ?(write_error_handler = default_write_error_handler)
+    ?fd ?buffer_size ?backlog ?no_close
+    socket_filename
+    f =
+  handler
+    ~read_timeout
+    ~processing_timeout
+    ~write_timeout
+    ~write_error_handler
+    ~sockaddr: (Unix.ADDR_UNIX socket_filename)
+    ?fd ?buffer_size ?backlog ?no_close
+    f

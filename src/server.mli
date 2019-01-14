@@ -12,6 +12,10 @@ val handler_inet :
   -> ?processing_timeout:float (* default: 300. seconds *)
   -> ?write_timeout:float (* default: 60. seconds *)
   -> ?write_error_handler:(exn -> unit Lwt.t)
+  -> ?fd:Lwt_unix.file_descr
+  -> ?buffer_size:int
+  -> ?backlog:int
+  -> ?no_close:bool
   -> inet_addr
   -> port
   -> (Request.t -> Response.t Lwt.t)
@@ -23,6 +27,10 @@ val handler_sock :
   -> ?processing_timeout:float (* default: 300. seconds *)
   -> ?write_timeout:float (* default: 60. seconds *)
   -> ?write_error_handler:(exn -> unit Lwt.t)
+  -> ?fd:Lwt_unix.file_descr
+  -> ?buffer_size:int
+  -> ?backlog:int
+  -> ?no_close:bool
   -> socket_filename
   -> (Request.t -> Response.t Lwt.t)
   -> Lwt_io.server Lwt.t
