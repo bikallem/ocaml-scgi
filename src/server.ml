@@ -46,7 +46,11 @@ let handle_connection
     (* Add content length from body if not already in the headers *)
     let is_content_length_in_headers =
       List.exists
-        (function `Content_length _ -> true | _ -> false)
+        (function
+          | `Content_length _ ->
+              true
+          | _ ->
+              false )
         response.headers
     in
     let response_headers =

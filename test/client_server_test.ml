@@ -11,18 +11,19 @@ let request_handler req =
   | "/hello" ->
       return
         { Scgi.Response.status= `Ok
-        ; headers= [`Content_type "text/plain"]
-        ; body= `String "Hello" }
+        ; headers= [ `Content_type "text/plain" ]
+        ; body= `String "Hello"
+        }
   | _ ->
       return
         { Scgi.Response.status= `Not_found
-        ; headers= [`Content_type "text/plain"]
-        ; body= `String "Not such path" }
+        ; headers= [ `Content_type "text/plain" ]
+        ; body= `String "Not such path"
+        }
 
 let test_hello () =
   let req = Scgi.Request.make `GET (Uri.of_string "/hello") [] "" in
-  Scgi.Client.request_sock ~socket_filename req
-  >>= fun resp ->
+  Scgi.Client.request_sock ~socket_filename req >>= fun resp ->
   pf "go response\n" ;
   assert (resp.Scgi.Response.status = `Ok) ;
   assert (resp.Scgi.Response.body = `String "Hello") ;
@@ -30,14 +31,12 @@ let test_hello () =
 
 let test_not_found () =
   let req = Scgi.Request.make `GET (Uri.of_string "/not/a/path") [] "" in
-  Scgi.Client.request_sock ~socket_filename req
-  >>= fun resp ->
+  Scgi.Client.request_sock ~socket_filename req >>= fun resp ->
   assert (resp.Scgi.Response.status = `Not_found) ;
   assert (resp.Scgi.Response.body = `String "Not such path") ;
   return true
 
-let tests = [("hello", test_hello) (* "not found", test_not_found; *)
-            ]
+let tests = [ ("hello", test_hello) (* "not found", test_not_found; *) ]
 
 let string_of_exn e =
   let backtrace = Printexc.get_backtrace () in

@@ -12,6 +12,8 @@ let of_string s =
       let next = String.index_from s index null in
       let value = String.sub s index (next - index) in
       loop ((name, value) :: lst) (next + 1)
-    with Not_found -> List.rev lst
+    with
+    | Not_found ->
+        List.rev lst
   in
   loop [] 0

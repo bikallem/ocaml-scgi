@@ -136,19 +136,24 @@ let of_stream stream =
   | ("CONTENT_LENGTH", content_length) :: rest -> (
       (* CONTENT_LENGTH must be first header according to spec *)
       let content_length =
-        try int_of_string content_length
-        with _ ->
-          failwith ("Invalid content_length: [" ^ content_length ^ "]")
+        try int_of_string content_length with
+        | _ ->
+            failwith ("Invalid content_length: [" ^ content_length ^ "]")
       in
       (* Process the remaining headers *)
       let (scgi, request_method, uri, headers) =
         List.fold_left
           (fun (s, m, u, h) -> function
             (* Look for known headers first *)
-            | ("SCGI", s) -> (s, m, u, h) | ("REQUEST_METHOD", m) ->
-                (s, m, u, h) | ("REQUEST_URI", u) -> (s, m, u, h)
+            | ("SCGI", s) ->
+                (s, m, u, h)
+            | ("REQUEST_METHOD", m) ->
+                (s, m, u, h)
+            | ("REQUEST_URI", u) ->
+                (s, m, u, h)
             (* Accumulate unknown headers *)
-            | header -> (s, m, u, header :: h) )
+            | header ->
+                (s, m, u, header :: h) )
           ("", "", "", []) rest
       in
       match scgi with
@@ -212,7 +217,11 @@ let param_exn ?default t name =
   | Some x ->
       x
   | None -> (
-    match default with Some x -> x | None -> raise Not_found )
+    match default with
+    | Some x ->
+        x
+    | None ->
+        raise Not_found )
 
 let params_get t = t.get_params
 
@@ -238,4 +247,6 @@ let cookie t (name : string) : string option =
           split_cookies
       in
       Some (List.assoc name cookie_pairs)
-    with Not_found -> None )
+    with
+    | Not_found ->
+        None )
