@@ -1,5 +1,5 @@
 (** HTTP request method *)
-type t = [`DELETE | `GET | `HEAD | `OPTIONS | `PATCH | `POST | `PUT]
+type t = [ `DELETE | `GET | `HEAD | `OPTIONS | `PATCH | `POST | `PUT ]
 
 val of_string : string -> t
 

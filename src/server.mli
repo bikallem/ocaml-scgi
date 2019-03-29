@@ -35,6 +35,7 @@ val handler_sock :
   -> (Request.t -> Response.t Lwt.t)
   -> Lwt_io.server Lwt.t
 (** Launch an SCGI server listening on a Unix-domain socket. You may want to
-    block the SIGPIPE signal with [Sys.set_signal Sys.sigpipe
-    Sys.Signal_ignore] in order to avoid process termination with exit code 141
-    (on Linux at least) when a client closes its connection too early. *)
+    block the SIGPIPE signal with
+    [Sys.set_signal Sys.sigpipe Sys.Signal_ignore] in order to avoid process
+    termination with exit code 141 (on Linux at least) when a client closes its
+    connection too early. *)

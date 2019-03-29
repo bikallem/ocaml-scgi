@@ -19,16 +19,23 @@ let default_write_error_handler exn =
   prerr_endline (Printexc.to_string exn ^ "\n" ^ backtrace) ;
   return ()
 
-let with_timeout timeout x = Lwt.pick [Lwt_unix.timeout timeout; x]
+let with_timeout timeout x = Lwt.pick [ Lwt_unix.timeout timeout; x ]
 
 (* Handle a connection. A single request is processed, then the connection is
    closed. *)
-let handle_connection ~read_timeout ~processing_timeout ~write_timeout
-    ~write_error_handler f inch ouch =
+let handle_connection
+    ~read_timeout
+    ~processing_timeout
+    ~write_timeout
+    ~write_error_handler
+    f
+    inch
+    ouch =
   let close_connection () =
     join
       [ catch (fun () -> Lwt_io.close ouch) write_error_handler
-      ; catch (fun () -> Lwt_io.close inch) write_error_handler ]
+      ; catch (fun () -> Lwt_io.close inch) write_error_handler
+      ]
   in
   let process_request () =
     with_timeout read_timeout (Request.of_stream (Lwt_io.read_chars inch))
@@ -46,9 +53,12 @@ let handle_connection ~read_timeout ~processing_timeout ~write_timeout
       if is_content_length_in_headers then response.headers
       else
         match response.body with
-        | `Stream (Some l, _) -> `Content_length l :: response.headers
-        | `String s -> `Content_length (String.length s) :: response.headers
-        | `Stream (None, _) -> response.headers
+        | `Stream (Some l, _) ->
+            `Content_length l :: response.headers
+        | `String s ->
+            `Content_length (String.length s) :: response.headers
+        | `Stream (None, _) ->
+            response.headers
     in
     (* Write headers *)
     Lwt_list.iter_s
@@ -56,12 +66,13 @@ let handle_connection ~read_timeout ~processing_timeout ~write_timeout
       (`Status response.status :: response_headers)
     >>= fun () ->
     (* Blank line between headers and body *)
-    Lwt_io.write ouch "\r\n"
-    >>= fun () ->
+    Lwt_io.write ouch "\r\n" >>= fun () ->
     (* Write the body *)
     ( match response.body with
-    | `Stream (_, s) -> Lwt_io.write_chars ouch s
-    | `String s -> Lwt_io.write ouch s )
+    | `Stream (_, s) ->
+        Lwt_io.write_chars ouch s
+    | `String s ->
+        Lwt_io.write ouch s )
     >>= fun () -> Lwt_io.flush ouch
   in
   catch
@@ -84,48 +95,43 @@ let handler
     ~write_timeout
     ~write_error_handler
     ~sockaddr
-    ?fd ?buffer_size ?backlog ?no_close
+    ?fd
+    ?buffer_size
+    ?backlog
+    ?no_close
     f =
-  Lwt_io.establish_server_with_client_address
-    ?fd ?buffer_size ?backlog ?no_close
-    sockaddr (fun _client_address (ic, oc) ->
-      handle_connection
-        ~read_timeout
-        ~processing_timeout
-        ~write_timeout
-        ~write_error_handler
-        f ic oc
-    )
+  Lwt_io.establish_server_with_client_address ?fd ?buffer_size ?backlog
+    ?no_close sockaddr (fun _client_address (ic, oc) ->
+      handle_connection ~read_timeout ~processing_timeout ~write_timeout
+        ~write_error_handler f ic oc )
 
-let handler_inet ?(read_timeout = default_read_timeout)
+let handler_inet
+    ?(read_timeout = default_read_timeout)
     ?(processing_timeout = default_processing_timeout)
     ?(write_timeout = default_write_timeout)
     ?(write_error_handler = default_write_error_handler)
-    ?fd ?buffer_size ?backlog ?no_close
+    ?fd
+    ?buffer_size
+    ?backlog
+    ?no_close
     inet_addr
     port
     f =
-  handler
-    ~read_timeout
-    ~processing_timeout
-    ~write_timeout
-    ~write_error_handler
-    ~sockaddr: (Unix.ADDR_INET (Unix.inet_addr_of_string inet_addr, port))
-    ?fd ?buffer_size ?backlog ?no_close
-    f
+  handler ~read_timeout ~processing_timeout ~write_timeout ~write_error_handler
+    ~sockaddr:(Unix.ADDR_INET (Unix.inet_addr_of_string inet_addr, port))
+    ?fd ?buffer_size ?backlog ?no_close f
 
-let handler_sock ?(read_timeout = default_read_timeout)
+let handler_sock
+    ?(read_timeout = default_read_timeout)
     ?(processing_timeout = default_processing_timeout)
     ?(write_timeout = default_write_timeout)
     ?(write_error_handler = default_write_error_handler)
-    ?fd ?buffer_size ?backlog ?no_close
+    ?fd
+    ?buffer_size
+    ?backlog
+    ?no_close
     socket_filename
     f =
-  handler
-    ~read_timeout
-    ~processing_timeout
-    ~write_timeout
-    ~write_error_handler
-    ~sockaddr: (Unix.ADDR_UNIX socket_filename)
-    ?fd ?buffer_size ?backlog ?no_close
-    f
+  handler ~read_timeout ~processing_timeout ~write_timeout ~write_error_handler
+    ~sockaddr:(Unix.ADDR_UNIX socket_filename) ?fd ?buffer_size ?backlog
+    ?no_close f
