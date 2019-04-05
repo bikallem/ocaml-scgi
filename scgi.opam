@@ -1,4 +1,4 @@
-opam-version : "1.2"
+opam-version: "2.0"
 maintainer : "Bikal Lem <gbikal @gmail.com>"
 authors : [
   "Mike Wells <https://github.com/mwells>"
@@ -7,7 +7,7 @@ authors : [
 ]
 homepage : "https://github.com/bikallem/ocaml-scgi"
 bug-reports :  "https://github.com/bikallem/ocaml-scgi/issues"
-dev-repo: "https://github.com/bikallem/ocaml-scgi.git"
+dev-repo: "git+https://github.com/bikallem/ocaml-scgi.git"
 tags: ["scgi" "web application"]
 license: "BSD"
 synopsis: "Simple Common Gateway Interface (SCGI) protocol support for interface with HTTP servers"
@@ -15,9 +15,10 @@ synopsis: "Simple Common Gateway Interface (SCGI) protocol support for interface
 build: [make "build"]
 install: [make "install"]
 remove: [make "uninstall"]
-depends : [
-	"dune" {build}
-	"lwt"
+depends: [
+  "ocaml"
+  "dune" {build}
+  "lwt"
   "lwt_ppx"
-	"uri"
+  "uri"
 ]
