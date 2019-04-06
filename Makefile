@@ -1,5 +1,5 @@
 build:
-	dune build
+	dune build @all
 
 fmt:
 	dune build @fmt --auto-promote
