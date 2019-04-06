@@ -16,8 +16,9 @@ build: [make "build"]
 install: [make "install"]
 remove: [make "uninstall"]
 depends: [
-  "ocaml"
+  "ocaml" {>= "4.05.0"}
   "dune" {build}
+	"stdcompat"
   "lwt"
   "lwt_ppx"
   "uri"

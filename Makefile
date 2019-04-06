@@ -19,5 +19,8 @@ install: build
 uninstall: install
 	dune uninstall scgi
 
+all-supported-ocaml-versions:
+	dune build @all --workspace dune-workspace.dev --root . 
+
 .PHONY: build fmt tests clean utop install uninstall
 

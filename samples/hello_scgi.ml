@@ -1,7 +1,6 @@
 (** A simple hello world scgi * * E.g. ./_build/hello_scgi.byte *)
 
 open Scgi
-open Lwt
 
 let () =
   (* Command line options *)
