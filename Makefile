@@ -22,5 +22,5 @@ uninstall: install
 all-supported-ocaml-versions:
 	dune build @all --workspace dune-workspace.dev --root . 
 
-.PHONY: build fmt tests clean utop install uninstall
+.PHONY: build fmt tests clean utop install uninstall all-supported-ocaml-versions
 
