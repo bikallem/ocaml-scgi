@@ -1,4 +1,4 @@
 (executables
- (names hello_scgi hello_scgi_unix_sock)
- (public_names hello_scgi hello_scgi_unix_sock)
+ (names hello_scgi hello_world_server hello_world_client)
+ (public_names hello_scgi hello_world_server hello_world_client)
  (libraries scgi lwt.unix))

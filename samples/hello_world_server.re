@@ -9,13 +9,13 @@ let request_handler = req => {
     Lwt.return({
       Response.status: `Ok,
       headers: [`Content_type("text/plain")],
-      body: `String("Hello"),
+      body: `String("Hello World!"),
     })
   | _ =>
     Lwt.return({
       Response.status: `Not_found,
       headers: [`Content_type("text/plain")],
-      body: `String("Hello"),
+      body: `String("No such path"),
     })
   };
 };
@@ -25,8 +25,7 @@ let () = {
     Sys.remove(socket_filename);
   };
 
-  let server =
-    Server.handler_sock(socket_filename, request_handler)
-    >>= (_ => fst(Lwt.wait()));
-  Lwt_main.run(server);
+  Server.handler_sock(socket_filename, request_handler)
+  >>= (_ => fst(Lwt.wait()))
+  |> Lwt_main.run;
 };
