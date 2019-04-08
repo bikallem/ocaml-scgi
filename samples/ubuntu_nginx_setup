@@ -1,0 +1,67 @@
+1) Install Nginx
+
+$ sudo apt update
+$ sudo apt install nginx
+
+2) Configure firewall
+$ sudo ufw app list
+
+You should get a listing of the application profiles:
+
+Output
+Available applications:
+  Nginx Full
+  Nginx HTTP
+  Nginx HTTPS
+  OpenSSH
+
+$ sudo ufw allow 'Nginx HTTP'
+
+You can verify the change by typing:
+
+    sudo ufw status
+
+You should see HTTP traffic allowed in the displayed output:
+
+Output
+Status: active
+
+To                         Action      From
+--                         ------      ----
+OpenSSH                    ALLOW       Anywhere
+Nginx HTTP                 ALLOW       Anywhere
+OpenSSH (v6)               ALLOW       Anywhere (v6)
+Nginx HTTP (v6)            ALLOW       Anywhere (v6)
+
+
+3) Checking your Web Server
+
+At the end of the installation process, Ubuntu 18.04 starts Nginx. The web server should already be up and running.
+
+We can check with the systemd init system to make sure the service is running by typing:
+
+$ systemctl status nginx
+
+4) Configure SCGI
+
+sudo vim /etc/nginx/sites-available/default
+
+Ensure the following exists
+
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+
+	root /var/www/html;
+
+	# Add index.php to the list if you are using PHP
+	index index.html index.htm index.nginx-debian.html;
+
+	server_name _;
+
+	location / {
+		include scgi_params;
+		scgi_pass localhost:1025;
+	}
+}
+
