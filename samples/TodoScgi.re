@@ -6,14 +6,40 @@ let req_count = ref(0);
 
 let getTodo = (r: Request.t) => {
   open Printf;
+  open Tyxml;
 
   let meth = Request.meth(r) |> Http_method.to_string;
   let path = Request.path(r);
-  let body =
+  let _requestDetails =
     sprintf("HTTP Method: %s, Path: %s.\nAll todo done.", meth, path);
+
+  let%html todoSection = {|
+		<main style="margin:0 auto; width: 500px;">
+			<h1 style="text-align:center">todos</h1>
+			<input style="width:100%" placeholder="What needs to be done?">
+		</main>
+	|};
+
+  let title = Html.txt("Todo MVC in Native ReasonML");
+  let%html todoPage =
+    {|<html>
+     <head>
+       <title>|}(
+      title,
+      {|</title>
+     </head>
+     <body style="font-family:arial, sans-serif">|},
+      [todoSection],
+      {|</body>
+   </html>
+  |},
+    );
+
+  let body = Format.asprintf("%a", Html.pp(~indent=true, ()), todoPage);
+
   Lwt.return({
     Response.status: `Ok,
-    headers: [`Content_type("text/plain")],
+    headers: [`Content_type("text/html")],
     body: `String(body),
   });
 };
