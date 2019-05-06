@@ -1,5 +1,5 @@
 (** Netstring implementation *)
-open Lwt
+open Lwt.Infix
 
 let zero_ascii = int_of_char '0'
 
@@ -15,11 +15,11 @@ let decode stream =
     | _ ->
         Lwt.fail (Failure "Non-digit encountered in length")
   in
-  let%lwt size = read_size 0 in
+  read_size 0 >>= fun size ->
   (* Read in the string *)
   if size > Sys.max_string_length then Lwt.fail (Failure "Too big")
   else
-    let%lwt chars = Lwt_stream.nget size stream in
+    Lwt_stream.nget size stream >>= fun chars ->
     Lwt_stream.get stream >>= function
     | Some ',' ->
         let b = Buffer.create size in
