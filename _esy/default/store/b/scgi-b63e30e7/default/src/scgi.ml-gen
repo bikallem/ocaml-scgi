@@ -1,0 +1,26 @@
+(** @canonical Scgi.Client *)
+module Client = Scgi__Client
+
+(** @canonical Scgi.Headers *)
+module Headers = Scgi__Headers
+
+(** @canonical Scgi.Http_header *)
+module Http_header = Scgi__Http_header
+
+(** @canonical Scgi.Http_method *)
+module Http_method = Scgi__Http_method
+
+(** @canonical Scgi.Http_status *)
+module Http_status = Scgi__Http_status
+
+(** @canonical Scgi.Netstring *)
+module Netstring = Scgi__Netstring
+
+(** @canonical Scgi.Request *)
+module Request = Scgi__Request
+
+(** @canonical Scgi.Response *)
+module Response = Scgi__Response
+
+(** @canonical Scgi.Server *)
+module Server = Scgi__Server

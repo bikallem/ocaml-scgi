@@ -1,6 +1,6 @@
 (executables
- (names TodoScgi hello_world_server hello_world_client)
- (public_names TodoScgi hello_world_server hello_world_client)
+ (names TodoScgi HelloWorldServer HelloWorldClient)
+ (public_names TodoScgi HelloWorldServer HelloWorldClient)
  (libraries scgi lwt.unix tyxml)
  (preprocess (pps tyxml-ppx))
 )

@@ -1,0 +1,6 @@
+description = "Simple Common Gateway Interface (SCGI) protocol support for interface with HTTP servers"
+requires = "lwt lwt.unix lwt_ppx str uri"
+archive(byte) = "scgi.cma"
+archive(native) = "scgi.cmxa"
+plugin(byte) = "scgi.cma"
+plugin(native) = "scgi.cmxs"
