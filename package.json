@@ -8,8 +8,8 @@
   },
   "scripts": {
     "fmt"  : "esy dune build @fmt --auto-promote",
-    "build" : "esy dune @all",
-    "test" : "esy b dune runtest",
+    "all" : "esy dune build @all --profile dev",
+    "test" : "esy dune runtest",
     "clean" : "esy dune clean",
     "all-versions" : "esy dune build @all --workspace dune-workspace.dev --root ."
   },
@@ -30,6 +30,7 @@
     "@opam/merlin": "*",
     "@opam/ocamlformat": "*",
     "@opam/utop": "^2.3.0",
-    "@opam/dune": "*"
+    "@opam/dune": "*",
+    "@opam/js_of_ocaml-compiler": "*"
   }
 }

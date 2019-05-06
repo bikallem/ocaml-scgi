@@ -1,6 +1,5 @@
-;(executable
-; (name client_server_test))
-
-(test
- (name client_server_test)
- (libraries scgi lwt))
+(tests
+ (names client_server_test netstring_test request_test scgi_test)
+ (libraries scgi lwt lwt_ppx)
+ (preprocess
+  (pps lwt_ppx)))

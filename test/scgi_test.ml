@@ -13,20 +13,19 @@ let tests =
   [ ( "scgi_header"
     , fun () ->
         let result = Scgi.Headers.of_string (mock_request ()) in
-        assert_int "same length list" (List.length result) 4 )
+        assert_int ~msg:"same length list" (List.length result) 4 )
   ; ( "scgi_request"
     , fun () ->
         Scgi.Request.of_stream (Lwt_stream.of_string (mock_request ()))
         >>= fun r ->
         let open Scgi.Request in
-        assert_int "content_length" 27 (content_length r) >>= fun () ->
+        assert_int ~msg:"content_length" 27 (content_length r) >>= fun () ->
         assert_equal ~printer:Scgi.Http_method.to_string ~msg:"method"
           ~expected:`POST (meth r)
         >>= fun () ->
-        assert_string "uri" "/deepthought" (path r) >>= fun () ->
+        assert_string ~msg:"uri" "/deepthought" (path r) >>= fun () ->
         let body = contents r in
-        assert_string ~msg:"content" ~expected:"What is the answer to life?"
-          body )
+        assert_string ~msg:"content" "What is the answer to life?" body )
   ]
 
 let () = run tests
