@@ -1,4 +1,0 @@
-#!/bin/sh
-export ESY__NODE_BIN_PATH="/home/blem/projects-ocaml/ocaml-scgi/_esy/default/bin"
-exec "/usr/bin/node" -r "/home/blem/projects-ocaml/ocaml-scgi/_esy/default/pnp.js" "$@"
-              
