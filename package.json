@@ -8,6 +8,7 @@
   },
   "scripts": {
     "fmt"  : "esy dune build @fmt --auto-promote",
+    "build" : "esy dune @all",
     "test" : "esy b dune runtest",
     "clean" : "esy dune clean",
     "all-versions" : "esy dune build @all --workspace dune-workspace.dev --root ."

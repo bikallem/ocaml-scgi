@@ -1,21 +1,20 @@
-open Printf
-open Lwt
+open Lwt.Infix
 
-let socket_filename = "/tmp/ocaml-scgi-test.sock"
+let socket_filename = "ocaml-scgi-test.sock"
 
-let pf = Printf.printf
+let (server_is_ready, notify_server_is_ready) = Lwt.wait ()
 
 let request_handler req =
-  printf "Server got request for path %S\n" (Scgi.Request.path req) ;
+  Printf.printf "Server got request for path %S\n" (Scgi.Request.path req) ;
   match Scgi.Request.path req with
   | "/hello" ->
-      return
+      Lwt.return
         { Scgi.Response.status= `Ok
         ; headers= [ `Content_type "text/plain" ]
         ; body= `String "Hello"
         }
   | _ ->
-      return
+      Lwt.return
         { Scgi.Response.status= `Not_found
         ; headers= [ `Content_type "text/plain" ]
         ; body= `String "Not such path"
@@ -24,19 +23,18 @@ let request_handler req =
 let test_hello () =
   let req = Scgi.Request.make `GET (Uri.of_string "/hello") [] "" in
   Scgi.Client.request_sock ~socket_filename req >>= fun resp ->
-  pf "go response\n" ;
   assert (resp.Scgi.Response.status = `Ok) ;
   assert (resp.Scgi.Response.body = `String "Hello") ;
-  return true
+  Lwt.return true
 
 let test_not_found () =
   let req = Scgi.Request.make `GET (Uri.of_string "/not/a/path") [] "" in
   Scgi.Client.request_sock ~socket_filename req >>= fun resp ->
   assert (resp.Scgi.Response.status = `Not_found) ;
   assert (resp.Scgi.Response.body = `String "Not such path") ;
-  return true
+  Lwt.return true
 
-let tests = [ ("hello", test_hello) (* "not found", test_not_found; *) ]
+let tests = [ ("hello", test_hello); ("not found", test_not_found) ]
 
 let string_of_exn e =
   let backtrace = Printexc.get_backtrace () in
@@ -44,25 +42,28 @@ let string_of_exn e =
   s ^ "\n" ^ backtrace
 
 let run_tests () =
+  server_is_ready >>= fun _ ->
   Lwt_list.map_p
     (fun (name, f) ->
-      catch f (fun e ->
+      Lwt.catch f (fun e ->
           let s = string_of_exn e in
-          printf "Exception: %s\n%!" s ;
-          return false )
-      >>= fun success -> return (name, success) )
+          Printf.printf "Exception: %s\n%!" s ;
+          Lwt.return false )
+      >>= fun success -> Lwt.return (name, success) )
     tests
   >>= fun results ->
   List.iter
     (fun (name, success) ->
-      printf "%-10s %s\n" (if success then "OK" else "ERROR") name )
+      Printf.printf "%-10s %s\n" (if success then "OK" else "ERROR") name )
     results ;
   let total_success = List.for_all (fun (_, success) -> success) results in
-  return total_success
+  Lwt.return total_success
 
 let create_server request_handler =
   if Sys.file_exists socket_filename then Sys.remove socket_filename ;
-  Scgi.Server.handler_sock socket_filename request_handler
+  Scgi.Server.handler_sock socket_filename request_handler >>= fun _ ->
+  Lwt.wakeup_later notify_server_is_ready () ;
+  Lwt.return_unit
 
 let main () =
   Printexc.record_backtrace true ;
