@@ -1,7 +1,6 @@
 ;(executable
- ; (name client_server_test))
+; (name client_server_test))
 
-(test 
-  (name client_server_test)
-  (libraries scgi lwt)  
-  )
+(test
+ (name client_server_test)
+ (libraries scgi lwt))

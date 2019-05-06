@@ -27,6 +27,7 @@
   "devDependencies": {
     "ocaml": "^4.05.0",
     "@opam/merlin": "*",
+    "@opam/ocamlformat": "*",
     "@opam/utop": "^2.3.0",
     "@opam/dune": "*"
   }
