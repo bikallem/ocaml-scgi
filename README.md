@@ -2,24 +2,14 @@
 
 [SCGI](http://www.python.ca/scgi/protocol.txt) implementation in OCaml
 
-## Dependencies
+## Install
 
-* [LWT](http://ocsigen.org/lwt/install) -- initial version uses 2.3.1
-
-You could just copy the source into your own project.  To build a library, you'll also need:
-
-* [findlib](http://projects.camlcity.org/projects/findlib.html)
-
-Note that LWT has dependencies too, including:
-
-* [libev](http://dist.schmorp.de/libev/)
-* [react](http://erratique.ch/repos/react.git)
+opam install scgi
 
 ## Building
 
-    $ make
-    $ make install
-    $ make test
-    $ make samples
-
-(Alternatively, run ``make world`` to do all of above)
+    $ esy b
+    $ esy test
+    
+## Samples
+https://github.com/bikallem/ocaml-scgi/tree/master/samples
