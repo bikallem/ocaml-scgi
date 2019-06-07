@@ -8,10 +8,9 @@
   },
   "scripts": {
     "fmt"  : "esy dune build @fmt --auto-promote",
-    "all" : "esy dune build --profile dev",
+    "all" : "esy dune build @all",
     "test" : "esy dune runtest",
-    "clean" : "esy dune clean",
-    "all-versions" : "esy dune build --workspace dune-workspace.dev --root ."
+    "clean" : "esy dune clean"
   },
   "dependencies": {
     "@opam/lwt_ppx": "^1.2.2",
@@ -21,16 +20,12 @@
     "@opam/tyxml": "^4.3.0",
     "@opam/tyxml-ppx": "4.3.0"
   },
-  "resolutions": {
-    "@opam/dune": "1.8.2"
-  },
   "devDependencies": {
-    "ocaml": "^4.05.0",
+    "ocaml": "4.6.10",
     "@opam/reason": "*",
     "@opam/merlin": "*",
     "@opam/ocamlformat": "*",
-    "@opam/utop": "^2.3.0",
-    "@opam/dune": "*",
-    "@opam/js_of_ocaml-compiler": "*"
+    "@opam/rtop": "*",
+    "@opam/dune": "^1.10.0"
   }
 }

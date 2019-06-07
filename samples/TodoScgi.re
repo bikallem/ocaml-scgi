@@ -14,11 +14,11 @@ let getTodo = (r: Request.t) => {
     sprintf("HTTP Method: %s, Path: %s.\nAll todo done.", meth, path);
 
   let%html todoSection = {|
-		<main style="margin:0 auto; width: 500px;">
-			<h1 style="text-align:center">todos</h1>
-			<input style="width:100%" placeholder="What needs to be done?">
-		</main>
-	|};
+<main style="margin:0 auto; width: 500px;">
+<h1 style="text-align:center">todos</h1>
+<input style="width:100%" placeholder="What needs to be done?">
+</main>
+|};
 
   let title = Html.txt("Todo MVC in Native ReasonML");
   let%html todoPage =
