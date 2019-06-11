@@ -61,6 +61,7 @@ server {
 	location / {
 		include scgi_params;
 		scgi_pass localhost:1025;
+		// scgi_pass unix:/tmp/scgi.socket
 	}
 }
 
