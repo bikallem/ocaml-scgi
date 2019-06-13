@@ -1,5 +1,0 @@
-(executables
- (names helloworld_client)
- (libraries scgi lwt.unix tyxml)
- (preprocess
-  (pps tyxml-ppx)))
