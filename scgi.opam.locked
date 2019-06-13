@@ -1,20 +1,22 @@
 opam-version: "2.0"
-maintainer : "Bikal Lem <gbikal @gmail.com>"
-authors : [
+build: [
+  ["dune" "subst"] {pinned}
+  ["dune" "build" "-p" name "-j" jobs]
+  ["dune" "runtest" "-p" name "-j" jobs] {with-test}
+  ["dune" "build" "-p" name "@doc"] {with-doc}
+]
+maintainer: ["Bikal Lem <https://github.com/bikallem>"]
+authors: [
   "Mike Wells <https://github.com/mwells>"
   "Martin Jambon <https://github.com/mjambon>"
   "Bikal Lem <https://github.com/bikallem>"
 ]
-homepage : "https://github.com/bikallem/ocaml-scgi"
-bug-reports :  "https://github.com/bikallem/ocaml-scgi/issues"
+bug-reports: "https://github.com/bikallem/ocaml-scgi/issues"
+homepage: "https://github.com/bikallem/ocaml-scgi"
+license: "BSD-3-Clause"
 dev-repo: "git+https://github.com/bikallem/ocaml-scgi.git"
-tags: ["scgi" "web application"]
-license: "BSD"
-synopsis: "Simple Common Gateway Interface (SCGI) protocol support for interface with HTTP servers"
-
-build: [make "build"]
-install: [make "install"]
-remove: [make "uninstall"]
+synopsis:
+  "Simple Common Gateway Interface (SCGI) protocol support for interface with HTTP servers"
 depends: [
   "base" {= "v0.12.2"}
   "base-bigarray" {= "base"}
