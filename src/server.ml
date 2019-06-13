@@ -19,7 +19,7 @@ let default_write_error_handler exn =
   prerr_endline (Printexc.to_string exn ^ "\n" ^ backtrace) ;
   return ()
 
-let with_timeout timeout x = Lwt.pick [ Lwt_unix.timeout timeout; x ]
+let with_timeout timeout x = Lwt.pick [Lwt_unix.timeout timeout; x]
 
 (* Handle a connection. A single request is processed, then the connection is
    closed. *)
@@ -34,12 +34,12 @@ let handle_connection
   let close_connection () =
     join
       [ catch (fun () -> Lwt_io.close ouch) write_error_handler
-      ; catch (fun () -> Lwt_io.close inch) write_error_handler
-      ]
+      ; catch (fun () -> Lwt_io.close inch) write_error_handler ]
   in
   let process_request () =
     with_timeout read_timeout (Request.of_stream (Lwt_io.read_chars inch))
-    >>= fun request -> f request
+    >>= fun request ->
+    f request
   in
   let write_response response =
     let open Response in
@@ -47,22 +47,17 @@ let handle_connection
     let is_content_length_in_headers =
       List.exists
         (function
-          | `Content_length _ ->
-              true
-          | _ ->
-              false )
+          | `Content_length _ -> true
+          | _ -> false)
         response.headers
     in
     let response_headers =
       if is_content_length_in_headers then response.headers
       else
         match response.body with
-        | `Stream (Some l, _) ->
-            `Content_length l :: response.headers
-        | `String s ->
-            `Content_length (String.length s) :: response.headers
-        | `Stream (None, _) ->
-            response.headers
+        | `Stream (Some l, _) -> `Content_length l :: response.headers
+        | `String s -> `Content_length (String.length s) :: response.headers
+        | `Stream (None, _) -> response.headers
     in
     (* Write headers *)
     Lwt_list.iter_s
@@ -73,25 +68,27 @@ let handle_connection
     Lwt_io.write ouch "\r\n" >>= fun () ->
     (* Write the body *)
     ( match response.body with
-    | `Stream (_, s) ->
-        Lwt_io.write_chars ouch s
-    | `String s ->
-        Lwt_io.write ouch s )
-    >>= fun () -> Lwt_io.flush ouch
+    | `Stream (_, s) -> Lwt_io.write_chars ouch s
+    | `String s -> Lwt_io.write ouch s )
+    >>= fun () ->
+    Lwt_io.flush ouch
   in
   catch
     (fun () ->
       catch
         (fun () -> with_timeout processing_timeout (process_request ()))
-        (fun e -> write_error_handler e >>= fun () -> raise Exit)
+        (fun e ->
+          write_error_handler e >>= fun () ->
+          raise Exit)
       >>= fun response ->
       catch
         (fun () -> with_timeout write_timeout (write_response response))
         write_error_handler
-      >>= fun () -> close_connection () )
+      >>= fun () ->
+      close_connection ())
     (fun _e ->
       (* catch Exit or exceptions raised by custom error handlers *)
-      close_connection () )
+      close_connection ())
 
 let handler
     ~read_timeout
@@ -107,7 +104,7 @@ let handler
   Lwt_io.establish_server_with_client_address ?fd ?buffer_size ?backlog
     ?no_close sockaddr (fun _client_address (ic, oc) ->
       handle_connection ~read_timeout ~processing_timeout ~write_timeout
-        ~write_error_handler f ic oc )
+        ~write_error_handler f ic oc)
 
 let handler_inet
     ?(read_timeout = default_read_timeout)

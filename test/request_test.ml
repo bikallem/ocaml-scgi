@@ -8,8 +8,7 @@ let tests =
         let make cookies =
           Request.make `GET
             (Uri.of_string "http://example.net")
-            [ ("HTTP_COOKIE", cookies) ]
-            ""
+            [("HTTP_COOKIE", cookies)] ""
         in
         let printer = string_option_printer in
         let r = make "uid=123456" in
@@ -27,7 +26,6 @@ let tests =
           (Request.cookie r "baz")
         >>= fun () ->
         assert_equal ~printer ~msg:"bar=None" ~expected:None
-          (Request.cookie r "bar") )
-  ]
+          (Request.cookie r "bar") ) ]
 
 let () = run tests

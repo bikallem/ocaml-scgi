@@ -15,10 +15,8 @@ let assert_int ~msg expected actual =
   assert_equal ~printer:string_of_int ~msg ~expected actual
 
 let string_option_printer = function
-  | None ->
-      "None"
-  | Some s ->
-      Printf.sprintf "Some \"%s\"" s
+  | None -> "None"
+  | Some s -> Printf.sprintf "Some \"%s\"" s
 
 let test_runner tests =
   let progress () = output_char stderr '.' ; flush stderr in
@@ -33,7 +31,7 @@ let test_runner tests =
                  (Printexc.to_string e)
                  (Printexc.get_backtrace ())
              in
-             failwith msg )
+             failwith msg)
        tests)
 
 let run tests =

@@ -1,5 +1,5 @@
-(** Tests for the scgi module *)
 open Test_common
+(** Tests for the scgi module *)
 
 open Lwt
 
@@ -25,7 +25,6 @@ let tests =
         >>= fun () ->
         assert_string ~msg:"uri" "/deepthought" (path r) >>= fun () ->
         let body = contents r in
-        assert_string ~msg:"content" "What is the answer to life?" body )
-  ]
+        assert_string ~msg:"content" "What is the answer to life?" body ) ]
 
 let () = run tests

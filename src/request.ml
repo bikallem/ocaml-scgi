@@ -9,8 +9,7 @@ type t =
   ; headers: (string * string) list
   ; content: string
   ; get_params: (string * string) list
-  ; post_params: (string * string) list
-  }
+  ; post_params: (string * string) list }
 
 type header =
   [ `Http_cookie
@@ -40,56 +39,31 @@ type header =
   | `Other of string ]
 
 let string_of_header : header -> string = function
-  | `Http_cookie ->
-      "http_cookie"
-  | `Http_accept_charset ->
-      "http_accept_charset"
-  | `Http_accept_language ->
-      "http_accept_language"
-  | `Http_accept_encoding ->
-      "http_accept_encoding"
-  | `Http_referer ->
-      "http_referer"
-  | `Http_accept ->
-      "http_accept"
-  | `Http_content_type ->
-      "http_content_type"
-  | `Http_content_md5 ->
-      "http_content_md5"
-  | `Http_user_agent ->
-      "http_user_agent"
-  | `Http_origin ->
-      "http_origin"
-  | `Http_cache_control ->
-      "http_cache_control"
-  | `Http_content_length ->
-      "http_content_length"
-  | `Http_connection ->
-      "http_connection"
-  | `Http_host ->
-      "http_host"
-  | `Http_authorization ->
-      "http_authorization"
-  | `Http_date ->
-      "http_date"
-  | `Http_x_forwarded_proto ->
-      "http_x_forwarded_proto"
-  | `Http_x_forwarded_port ->
-      "http_x_forwarded_port"
-  | `Http_x_forwarded_for ->
-      "http_x_forwarded_for"
-  | `Server_name ->
-      "server_name"
-  | `Server_port ->
-      "server_port"
-  | `Remote_port ->
-      "remote_port"
-  | `Remote_addr ->
-      "remote_addr"
-  | `Server_protocol ->
-      "server_protocol"
-  | `Other s ->
-      String.lowercase_ascii s
+  | `Http_cookie -> "http_cookie"
+  | `Http_accept_charset -> "http_accept_charset"
+  | `Http_accept_language -> "http_accept_language"
+  | `Http_accept_encoding -> "http_accept_encoding"
+  | `Http_referer -> "http_referer"
+  | `Http_accept -> "http_accept"
+  | `Http_content_type -> "http_content_type"
+  | `Http_content_md5 -> "http_content_md5"
+  | `Http_user_agent -> "http_user_agent"
+  | `Http_origin -> "http_origin"
+  | `Http_cache_control -> "http_cache_control"
+  | `Http_content_length -> "http_content_length"
+  | `Http_connection -> "http_connection"
+  | `Http_host -> "http_host"
+  | `Http_authorization -> "http_authorization"
+  | `Http_date -> "http_date"
+  | `Http_x_forwarded_proto -> "http_x_forwarded_proto"
+  | `Http_x_forwarded_port -> "http_x_forwarded_port"
+  | `Http_x_forwarded_for -> "http_x_forwarded_for"
+  | `Server_name -> "server_name"
+  | `Server_port -> "server_port"
+  | `Remote_port -> "remote_port"
+  | `Remote_addr -> "remote_addr"
+  | `Server_protocol -> "server_protocol"
+  | `Other s -> String.lowercase_ascii s
 
 let get_header headers header_name =
   let s = string_of_header header_name in
@@ -111,11 +85,9 @@ let make meth uri headers content =
       ( match meth with
       | `POST
         when get_header headers `Http_content_type
-             = [ "application/x-www-form-urlencoded" ] ->
+             = ["application/x-www-form-urlencoded"] ->
           concat_query_values (Uri.query_of_encoded content)
-      | _ ->
-          [] )
-  }
+      | _ -> [] ) }
 
 let to_debug_string t =
   let s lst =
@@ -137,23 +109,18 @@ let of_stream stream =
       (* CONTENT_LENGTH must be first header according to spec *)
       let content_length =
         try int_of_string content_length with
-        | _ ->
-            failwith ("Invalid content_length: [" ^ content_length ^ "]")
+        | _ -> failwith ("Invalid content_length: [" ^ content_length ^ "]")
       in
       (* Process the remaining headers *)
       let (scgi, request_method, uri, headers) =
         List.fold_left
           (fun (s, m, u, h) -> function
             (* Look for known headers first *)
-            | ("SCGI", s) ->
-                (s, m, u, h)
-            | ("REQUEST_METHOD", m) ->
-                (s, m, u, h)
-            | ("REQUEST_URI", u) ->
-                (s, m, u, h)
+            | ("SCGI", s) -> (s, m, u, h)
+            | ("REQUEST_METHOD", m) -> (s, m, u, h)
+            | ("REQUEST_URI", u) -> (s, m, u, h)
             (* Accumulate unknown headers *)
-            | header ->
-                (s, m, u, header :: h) )
+            | header -> (s, m, u, header :: h))
           ("", "", "", []) rest
       in
       match scgi with
@@ -171,14 +138,10 @@ let of_stream stream =
               (Uri.of_string uri) headers content
           in
           return req
-      | "" ->
-          failwith "Missing SCGI header"
-      | _ ->
-          failwith "Unexpected SCGI header" )
-  | (n, _) :: _ ->
-      failwith ("Expected CONTENT_LENGTH, but got [" ^ n ^ "]")
-  | [] ->
-      failwith "No headers found"
+      | "" -> failwith "Missing SCGI header"
+      | _ -> failwith "Unexpected SCGI header" )
+  | (n, _) :: _ -> failwith ("Expected CONTENT_LENGTH, but got [" ^ n ^ "]")
+  | [] -> failwith "No headers found"
 
 let to_buffer buf x =
   let headers = Buffer.create 1000 in
@@ -207,21 +170,16 @@ let contents t = t.content
 
 let param t name =
   match List.assoc_opt name t.get_params with
-  | None ->
-      List.assoc_opt name t.post_params
-  | r ->
-      r
+  | None -> List.assoc_opt name t.post_params
+  | r -> r
 
 let param_exn ?default t name =
   match param t name with
-  | Some x ->
-      x
+  | Some x -> x
   | None -> (
     match default with
-    | Some x ->
-        x
-    | None ->
-        raise Not_found )
+    | Some x -> x
+    | None -> raise Not_found )
 
 let params_get t = t.get_params
 
@@ -231,8 +189,7 @@ let header t name = get_header t.headers name
 
 let cookie t (name : string) : string option =
   match get_header t.headers `Http_cookie with
-  | [] ->
-      None
+  | [] -> None
   | cookies :: _ -> (
     try
       let split_cookies = Str.split (Str.regexp "; ") cookies in
@@ -240,13 +197,10 @@ let cookie t (name : string) : string option =
         List.map
           (fun cookie ->
             match Str.split (Str.regexp "=") cookie with
-            | [ k; v ] ->
-                (k, v)
-            | _ ->
-                raise Not_found )
+            | [k; v] -> (k, v)
+            | _ -> raise Not_found)
           split_cookies
       in
       Some (List.assoc name cookie_pairs)
     with
-    | Not_found ->
-        None )
+    | Not_found -> None )

@@ -6,6 +6,7 @@ node_modules/
 _build
 _release
 _esy/
+_opam/
 concurrent-servers.install
 .DS_Store
 *.install

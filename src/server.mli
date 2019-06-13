@@ -1,5 +1,5 @@
-(** The SCGI server *)
 type server_name = string
+(** The SCGI server *)
 
 type inet_addr = string
 

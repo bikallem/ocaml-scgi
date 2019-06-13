@@ -1,5 +1,5 @@
-(** SCGI request headers *)
 type t = (string * string) list
+(** SCGI request headers *)
 
 let null = Char.chr 0
 
@@ -13,7 +13,6 @@ let of_string s =
       let value = String.sub s index (next - index) in
       loop ((name, value) :: lst) (next + 1)
     with
-    | Not_found ->
-        List.rev lst
+    | Not_found -> List.rev lst
   in
   loop [] 0

@@ -1,5 +1,5 @@
-(** Netstring implementation *)
 open Lwt.Infix
+(** Netstring implementation *)
 
 let zero_ascii = int_of_char '0'
 
@@ -8,12 +8,9 @@ let decode stream =
   let rec read_size size =
     (* Read in the size until we hit a ":" *)
     Lwt_stream.next stream >>= function
-    | ':' ->
-        Lwt.return size
-    | '0' .. '9' as c ->
-        read_size ((size * 10) + int_of_char c - zero_ascii)
-    | _ ->
-        Lwt.fail (Failure "Non-digit encountered in length")
+    | ':' -> Lwt.return size
+    | '0' .. '9' as c -> read_size ((size * 10) + int_of_char c - zero_ascii)
+    | _ -> Lwt.fail (Failure "Non-digit encountered in length")
   in
   read_size 0 >>= fun size ->
   (* Read in the string *)
@@ -27,8 +24,7 @@ let decode stream =
         Lwt.return (Buffer.contents b)
     | Some c ->
         Lwt.fail (Failure (Printf.sprintf "Expected comma, but got %c" c))
-    | None ->
-        Lwt.fail (Failure "Empty when comma expected")
+    | None -> Lwt.fail (Failure "Empty when comma expected")
 
 (** Encode a netstring *)
 let encode s = string_of_int (String.length s) ^ ":" ^ s ^ ","

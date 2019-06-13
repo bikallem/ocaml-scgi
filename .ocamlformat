@@ -5,7 +5,6 @@ comment-check=true
 wrap-fun-args=true
 wrap-comments=false
 type-decl=compact
-space-around-collection-expressions=true
 single-case=sparse
 sequence-style=separator
 parse-docstrings=true

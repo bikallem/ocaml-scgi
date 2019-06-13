@@ -10,15 +10,13 @@ let request_handler req =
   | "/hello" ->
       Lwt.return
         { Scgi.Response.status= `Ok
-        ; headers= [ `Content_type "text/plain" ]
-        ; body= `String "Hello"
-        }
+        ; headers= [`Content_type "text/plain"]
+        ; body= `String "Hello" }
   | _ ->
       Lwt.return
         { Scgi.Response.status= `Not_found
-        ; headers= [ `Content_type "text/plain" ]
-        ; body= `String "Not such path"
-        }
+        ; headers= [`Content_type "text/plain"]
+        ; body= `String "Not such path" }
 
 let test_hello () =
   let req = Scgi.Request.make `GET (Uri.of_string "/hello") [] "" in
@@ -34,7 +32,7 @@ let test_not_found () =
   assert (resp.Scgi.Response.body = `String "Not such path") ;
   Lwt.return true
 
-let tests = [ ("hello", test_hello); ("not found", test_not_found) ]
+let tests = [("hello", test_hello); ("not found", test_not_found)]
 
 let string_of_exn e =
   let backtrace = Printexc.get_backtrace () in
@@ -48,13 +46,14 @@ let run_tests () =
       Lwt.catch f (fun e ->
           let s = string_of_exn e in
           Printf.printf "Exception: %s\n%!" s ;
-          Lwt.return false )
-      >>= fun success -> Lwt.return (name, success) )
+          Lwt.return false)
+      >>= fun success ->
+      Lwt.return (name, success))
     tests
   >>= fun results ->
   List.iter
     (fun (name, success) ->
-      Printf.printf "%-10s %s\n" (if success then "OK" else "ERROR") name )
+      Printf.printf "%-10s %s\n" (if success then "OK" else "ERROR") name)
     results ;
   let total_success = List.for_all (fun (_, success) -> success) results in
   Lwt.return total_success
