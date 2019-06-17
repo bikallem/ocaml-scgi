@@ -1,4 +1,5 @@
 open Lwt
+open Let_syntax
 
 let sock_send sock s =
   let oc = Lwt_io.of_fd ~mode:Lwt_io.output sock in
@@ -42,9 +43,9 @@ let read_headers ic =
 
 let sock_receive sock =
   let ic = Lwt_io.of_fd ~mode:Lwt_io.input sock in
-  read_cgi_status ic >>= fun status ->
-  read_headers ic >>= fun headers ->
-  Lwt_io.read ic >>= fun body ->
+  let* status = read_cgi_status ic in
+  let* headers = read_headers ic in
+  let* body = Lwt_io.read ic in
   return (Response.make ~status ~headers ~body:(`String body) ())
 
 let send_request sock req = sock_send sock (Request.to_string req)
@@ -59,15 +60,16 @@ let request_inet ~server_name ~port req =
     (fun () ->
       Lwt_unix.gethostbyname server_name >>= fun hentry ->
       if Array.length hentry.Unix.h_addr_list <= 0 then assert false ;
-      Lwt_unix.connect sock
-        (Unix.ADDR_INET (hentry.Unix.h_addr_list.(0), port))
-      >>= fun () ->
-      send_request sock req >>= fun () ->
-      receive_response sock >>= fun response ->
-      finally_ () >>= fun () ->
+      let* () =
+        Lwt_unix.connect sock
+          (Unix.ADDR_INET (hentry.Unix.h_addr_list.(0), port))
+      in
+      let* () = send_request sock req in
+      let* response = receive_response sock in
+      let* () = finally_ () in
       return response)
     (fun e ->
-      finally_ () >>= fun () ->
+      let* () = finally_ () in
       raise e)
 
 let request_sock ~socket_filename req =
@@ -75,11 +77,11 @@ let request_sock ~socket_filename req =
   let finally_ () = Lwt_unix.close sock in
   catch
     (fun () ->
-      Lwt_unix.(connect sock @@ Unix.ADDR_UNIX socket_filename) >>= fun () ->
-      send_request sock req >>= fun () ->
-      receive_response sock >>= fun response ->
-      finally_ () >>= fun () ->
+      let* () = Lwt_unix.(connect sock @@ Unix.ADDR_UNIX socket_filename) in
+      let* () = send_request sock req in
+      let* response = receive_response sock in
+      let* () = finally_ () in
       return response)
     (fun e ->
-      finally_ () >>= fun () ->
+      let* () = finally_ () in
       raise e)
