@@ -10,7 +10,7 @@ let getTodo = (r: Request.t) => {
 
   let meth = Request.meth(r) |> Http_method.to_string;
   let path = Request.path(r);
-  let _requestDetails =
+  let requestDetails =
     sprintf("HTTP Method: %s, Path: %s.\nAll todo done.", meth, path);
 
   let todoSection =
@@ -18,7 +18,10 @@ let getTodo = (r: Request.t) => {
       main(
         ~a=[a_style("margin:0 auto; width: 500px")],
         [
-          h1(~a=[a_style("text-align:center")], [txt("todos")]),
+          h1(
+            ~a=[a_style("text-align:center")],
+            [txt("Todos: " ++ requestDetails)],
+          ),
           input(
             ~a=[
               a_style("width:100%"),
