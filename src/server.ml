@@ -1,5 +1,4 @@
 open Lwt
-open Let_syntax
 
 type server_name = string
 
@@ -38,9 +37,8 @@ let handle_connection
       ; catch (fun () -> Lwt_io.close inch) write_error_handler ]
   in
   let process_request () =
-    let* request =
-      with_timeout read_timeout (Request.of_stream (Lwt_io.read_chars inch))
-    in
+    with_timeout read_timeout (Request.of_stream (Lwt_io.read_chars inch))
+    >>= fun request ->
     f request
   in
   let write_response response =
@@ -62,35 +60,31 @@ let handle_connection
         | `Stream (None, _) -> response.headers
     in
     (* Write headers *)
-    let* () =
-      Lwt_list.iter_s
-        (fun h -> Lwt_io.write ouch (Http_header.to_string h))
-        (`Status response.status :: response_headers)
-    in
+    Lwt_list.iter_s
+      (fun h -> Lwt_io.write ouch (Http_header.to_string h))
+      (`Status response.status :: response_headers)
+    >>= fun () ->
     (* Blank line between headers and body *)
-    let* () = Lwt_io.write ouch "\r\n" in
+    Lwt_io.write ouch "\r\n" >>= fun () ->
     (* Write the body *)
-    let* () =
-      match response.body with
-      | `Stream (_, s) -> Lwt_io.write_chars ouch s
-      | `String s -> Lwt_io.write ouch s
-    in
+    ( match response.body with
+    | `Stream (_, s) -> Lwt_io.write_chars ouch s
+    | `String s -> Lwt_io.write ouch s )
+    >>= fun () ->
     Lwt_io.flush ouch
   in
   catch
     (fun () ->
-      let* response =
-        catch
-          (fun () -> with_timeout processing_timeout (process_request ()))
-          (fun e ->
-            write_error_handler e >>= fun () ->
-            raise Exit)
-      in
-      let* () =
-        catch
-          (fun () -> with_timeout write_timeout (write_response response))
-          write_error_handler
-      in
+      catch
+        (fun () -> with_timeout processing_timeout (process_request ()))
+        (fun e ->
+          write_error_handler e >>= fun () ->
+          raise Exit)
+      >>= fun response ->
+      catch
+        (fun () -> with_timeout write_timeout (write_response response))
+        write_error_handler
+      >>= fun () ->
       close_connection ())
     (fun _e ->
       (* catch Exit or exceptions raised by custom error handlers *)

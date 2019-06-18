@@ -19,7 +19,6 @@ dev-repo: "git+https://github.com/bikallem/ocaml-scgi.git"
 synopsis:
   "Simple Common Gateway Interface (SCGI) protocol support for interface with HTTP servers"
 depends: [
-  "alcotest" {with-test}
   "dune" {build & >= "1.10"}
   "ocaml" {>= "4.07.1"}
   "lwt" {>= "4.2.1"}

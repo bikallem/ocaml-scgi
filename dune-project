@@ -1,5 +1,7 @@
 (lang dune 1.10)
+
 (name scgi)
+
 (using fmt 1.1)
 
 (generate_opam_files true)
@@ -26,7 +28,6 @@
  (tags
   ("scgi" "web application framework"))
  (depends
-  (alcotest :with-test)
   (dune
    (and
     :build

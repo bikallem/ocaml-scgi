@@ -20,13 +20,10 @@
     "@opam/tyxml-ppx": "4.3.0"
   },
   "devDependencies": {
-    "ocaml": "4.8.0",
+    "ocaml": "4.6.1",
+    "@opam/reason": "*",
     "@opam/merlin": "*",
-    "@opam/ocamlformat": "*",
-    "@opam/utop": "*",
+    "@opam/rtop": "*",
     "@opam/dune": "^1.10.0"
-  },
-  "resolutions": {
-    "@opam/ocamlformat": "link:../ocamlformat/ocamlformat.opam"
   }
 }
