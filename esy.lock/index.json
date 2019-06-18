@@ -1,5 +1,5 @@
 {
-  "checksum": "edf438036f488e50d0620a821d11235b",
+  "checksum": "cc23617947a2d889c153c421c4df646b",
   "root": "scgi@link-dev:./package.json",
   "node": {
     "scgi@link-dev:./package.json": {
@@ -13,9 +13,7 @@
       },
       "overrides": [],
       "dependencies": [
-        "@opam/uri@opam:2.2.1@6bd26f86",
-        "@opam/tyxml-ppx@opam:4.3.0@83d20309",
-        "@opam/tyxml@opam:4.3.0@15e44054",
+        "@opam/uri@opam:2.2.1@6bd26f86", "@opam/tyxml@opam:4.3.0@15e44054",
         "@opam/lwt_ppx@opam:1.2.2@946c5ba2", "@opam/lwt@opam:4.2.1@c1888ec9",
         "@opam/logs@opam:0.6.3@80c08d15"
       ],
@@ -219,35 +217,6 @@
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": [ "ocaml@4.6.1@d41d8cd9" ]
-    },
-    "@opam/tyxml-ppx@opam:4.3.0@83d20309": {
-      "id": "@opam/tyxml-ppx@opam:4.3.0@83d20309",
-      "name": "@opam/tyxml-ppx",
-      "version": "opam:4.3.0",
-      "source": {
-        "type": "install",
-        "source": [
-          "archive:https://opam.ocaml.org/cache/md5/fd/fd834a567f813bf447cab5f4c3a723e2#md5:fd834a567f813bf447cab5f4c3a723e2",
-          "archive:https://github.com/ocsigen/tyxml/releases/download/4.3.0/tyxml-4.3.0.tbz#md5:fd834a567f813bf447cab5f4c3a723e2"
-        ],
-        "opam": {
-          "name": "tyxml-ppx",
-          "version": "4.3.0",
-          "path": "esy.lock/opam/tyxml-ppx.4.3.0"
-        }
-      },
-      "overrides": [],
-      "dependencies": [
-        "ocaml@4.6.1@d41d8cd9", "@opam/tyxml@opam:4.3.0@15e44054",
-        "@opam/ppx_tools_versioned@opam:5.2.2@34409c89",
-        "@opam/markup@opam:0.8.0@e4958f14",
-        "@opam/dune@opam:1.10.0@b15ce221", "@esy-ocaml/substs@0.0.1@d41d8cd9"
-      ],
-      "devDependencies": [
-        "ocaml@4.6.1@d41d8cd9", "@opam/tyxml@opam:4.3.0@15e44054",
-        "@opam/ppx_tools_versioned@opam:5.2.2@34409c89",
-        "@opam/markup@opam:0.8.0@e4958f14"
-      ]
     },
     "@opam/tyxml@opam:4.3.0@15e44054": {
       "id": "@opam/tyxml@opam:4.3.0@15e44054",
@@ -856,33 +825,6 @@
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": [ "ocaml@4.6.1@d41d8cd9" ]
-    },
-    "@opam/markup@opam:0.8.0@e4958f14": {
-      "id": "@opam/markup@opam:0.8.0@e4958f14",
-      "name": "@opam/markup",
-      "version": "opam:0.8.0",
-      "source": {
-        "type": "install",
-        "source": [
-          "archive:https://opam.ocaml.org/cache/md5/be/be0e44a8e8a540f633996e0e26109b4d#md5:be0e44a8e8a540f633996e0e26109b4d",
-          "archive:https://github.com/aantron/markup.ml/archive/0.8.0.tar.gz#md5:be0e44a8e8a540f633996e0e26109b4d"
-        ],
-        "opam": {
-          "name": "markup",
-          "version": "0.8.0",
-          "path": "esy.lock/opam/markup.0.8.0"
-        }
-      },
-      "overrides": [],
-      "dependencies": [
-        "ocaml@4.6.1@d41d8cd9", "@opam/uutf@opam:1.0.2@4440868f",
-        "@opam/uchar@opam:0.0.2@c8218eea", "@opam/dune@opam:1.10.0@b15ce221",
-        "@esy-ocaml/substs@0.0.1@d41d8cd9"
-      ],
-      "devDependencies": [
-        "ocaml@4.6.1@d41d8cd9", "@opam/uutf@opam:1.0.2@4440868f",
-        "@opam/uchar@opam:0.0.2@c8218eea"
-      ]
     },
     "@opam/lwt_react@opam:1.1.2@2d73ee34": {
       "id": "@opam/lwt_react@opam:1.1.2@2d73ee34",

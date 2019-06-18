@@ -16,8 +16,7 @@
     "@opam/lwt": "4.2.1",
     "@opam/uri": "*",
     "@opam/logs": "^0.6.2",
-    "@opam/tyxml": "^4.3.0",
-    "@opam/tyxml-ppx": "4.3.0"
+    "@opam/tyxml": "^4.3.0"
   },
   "devDependencies": {
     "ocaml": "4.6.1",

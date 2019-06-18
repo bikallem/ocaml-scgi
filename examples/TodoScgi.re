@@ -13,26 +13,29 @@ let getTodo = (r: Request.t) => {
   let _requestDetails =
     sprintf("HTTP Method: %s, Path: %s.\nAll todo done.", meth, path);
 
-  let%html todoSection = {|
-<main style="margin:0 auto; width: 500px;">
-<h1 style="text-align:center">todos</h1>
-<input style="width:100%" placeholder="What needs to be done?">
-</main>
-|};
+  let todoSection =
+    Html.(
+      main(
+        ~a=[a_style("margin:0 auto; width: 500px")],
+        [
+          h1(~a=[a_style("text-align:center")], [txt("todos")]),
+          input(
+            ~a=[
+              a_style("width:100%"),
+              a_placeholder("What needs to be done?"),
+            ],
+            (),
+          ),
+        ],
+      )
+    );
 
-  let title = Html.txt("Todo MVC in Native ReasonML");
-  let%html todoPage =
-    {|<html>
-     <head>
-       <title>|}(
-      title,
-      {|</title>
-     </head>
-     <body style="font-family:arial, sans-serif">|},
-      [todoSection],
-      {|</body>
-   </html>
-  |},
+  let todoPage =
+    Html.(
+      html(
+        head(title(txt("Todo MVC in Native ReasonML")), []),
+        body(~a=[a_style("font-family:arial, sans-serif")], [todoSection]),
+      )
     );
 
   let body = Format.asprintf("%a", Html.pp(~indent=true, ()), todoPage);
