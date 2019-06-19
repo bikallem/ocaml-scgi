@@ -6,7 +6,7 @@ let req_count = ref(0);
 
 let getTodo = (r: Request.t) => {
   open Printf;
-  open Tyxml;
+  open Tyxml.Html;
 
   let meth = Request.meth(r) |> Http_method.to_string;
   let path = Request.path(r);
@@ -14,34 +14,30 @@ let getTodo = (r: Request.t) => {
     sprintf("HTTP Method: %s, Path: %s.\nAll todo done.", meth, path);
 
   let todoSection =
-    Html.(
-      main(
-        ~a=[a_style("margin:0 auto; width: 500px")],
-        [
-          h1(
-            ~a=[a_style("text-align:center")],
-            [txt("Todos: " ++ requestDetails)],
-          ),
-          input(
-            ~a=[
-              a_style("width:100%"),
-              a_placeholder("What needs to be done?"),
-            ],
-            (),
-          ),
-        ],
-      )
+    main(
+      ~a=[a_style("margin:0 auto; width: 500px")],
+      [
+        h1(
+          ~a=[a_style("text-align:center")],
+          [txt("Todos: " ++ requestDetails)],
+        ),
+        input(
+          ~a=[
+            a_style("width:100%"),
+            a_placeholder("What needs to be done?"),
+          ],
+          (),
+        ),
+      ],
     );
 
   let todoPage =
-    Html.(
-      html(
-        head(title(txt("Todo MVC in Native ReasonML")), []),
-        body(~a=[a_style("font-family:arial, sans-serif")], [todoSection]),
-      )
+    html(
+      head(title(txt("Todo MVC in Native ReasonML")), []),
+      body(~a=[a_style("font-family:arial, sans-serif")], [todoSection]),
     );
 
-  let body = Format.asprintf("%a", Html.pp(~indent=true, ()), todoPage);
+  let body = Format.asprintf("%a", pp(~indent=true, ()), todoPage);
 
   Lwt.return({
     Response.status: `Ok,
