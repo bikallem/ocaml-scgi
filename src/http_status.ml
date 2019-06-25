@@ -1,3 +1,5 @@
+(** Non-comprehensive list of HTTP response status codes and strings from
+    http://en.wikipedia.org/wiki/List_of_HTTP_status_codes *)
 type t =
   [ `Ok
   | `Created
@@ -37,8 +39,6 @@ type t =
   | `Gateway_timeout
   | `Http_version_not_supported
   | `Custom_code of int * string ]
-(** Non-comprehensive list of HTTP response status codes and strings from
-    http://en.wikipedia.org/wiki/List_of_HTTP_status_codes *)
 
 let to_pair = function
   | `Ok -> (200, "OK")

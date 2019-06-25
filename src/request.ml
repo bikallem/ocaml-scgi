@@ -120,7 +120,7 @@ let of_stream stream =
             | ("REQUEST_METHOD", m) -> (s, m, u, h)
             | ("REQUEST_URI", u) -> (s, m, u, h)
             (* Accumulate unknown headers *)
-            | header -> (s, m, u, header :: h))
+            | header -> (s, m, u, header :: h) )
           ("", "", "", []) rest
       in
       match scgi with
@@ -176,10 +176,7 @@ let param t name =
 let param_exn ?default t name =
   match param t name with
   | Some x -> x
-  | None -> (
-    match default with
-    | Some x -> x
-    | None -> raise Not_found )
+  | None -> ( match default with Some x -> x | None -> raise Not_found )
 
 let params_get t = t.get_params
 
@@ -198,7 +195,7 @@ let cookie t (name : string) : string option =
           (fun cookie ->
             match Str.split (Str.regexp "=") cookie with
             | [k; v] -> (k, v)
-            | _ -> raise Not_found)
+            | _ -> raise Not_found )
           split_cookies
       in
       Some (List.assoc name cookie_pairs)

@@ -64,11 +64,8 @@ let request_inet ~server_name ~port req =
       >>= fun () ->
       send_request sock req >>= fun () ->
       receive_response sock >>= fun response ->
-      finally_ () >>= fun () ->
-      return response)
-    (fun e ->
-      finally_ () >>= fun () ->
-      raise e)
+      finally_ () >>= fun () -> return response )
+    (fun e -> finally_ () >>= fun () -> raise e)
 
 let request_sock ~socket_filename req =
   let sock = Lwt_unix.(socket PF_UNIX SOCK_STREAM 0) in
@@ -78,8 +75,5 @@ let request_sock ~socket_filename req =
       Lwt_unix.(connect sock @@ Unix.ADDR_UNIX socket_filename) >>= fun () ->
       send_request sock req >>= fun () ->
       receive_response sock >>= fun response ->
-      finally_ () >>= fun () ->
-      return response)
-    (fun e ->
-      finally_ () >>= fun () ->
-      raise e)
+      finally_ () >>= fun () -> return response )
+    (fun e -> finally_ () >>= fun () -> raise e)

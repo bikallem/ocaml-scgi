@@ -1,5 +1,5 @@
-open Lwt.Infix
 (** Netstring implementation *)
+open Lwt.Infix
 
 let zero_ascii = int_of_char '0'
 

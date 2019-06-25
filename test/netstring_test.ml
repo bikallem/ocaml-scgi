@@ -1,5 +1,5 @@
-open Test_common
 (** Tests for the netstring module *)
+open Test_common
 
 open Lwt
 open Scgi

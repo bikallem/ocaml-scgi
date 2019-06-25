@@ -46,14 +46,13 @@ let run_tests () =
       Lwt.catch f (fun e ->
           let s = string_of_exn e in
           Printf.printf "Exception: %s\n%!" s ;
-          Lwt.return false)
-      >>= fun success ->
-      Lwt.return (name, success))
+          Lwt.return false )
+      >>= fun success -> Lwt.return (name, success) )
     tests
   >>= fun results ->
   List.iter
     (fun (name, success) ->
-      Printf.printf "%-10s %s\n" (if success then "OK" else "ERROR") name)
+      Printf.printf "%-10s %s\n" (if success then "OK" else "ERROR") name )
     results ;
   let total_success = List.for_all (fun (_, success) -> success) results in
   Lwt.return total_success

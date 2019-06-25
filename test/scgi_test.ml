@@ -1,5 +1,5 @@
-open Test_common
 (** Tests for the scgi module *)
+open Test_common
 
 open Lwt
 
