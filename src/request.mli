@@ -1,5 +1,5 @@
-type t
 (** SCGI request *)
+type t
 
 type header =
   [ `Http_cookie

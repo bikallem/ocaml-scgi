@@ -31,7 +31,7 @@ let test_runner tests =
                  (Printexc.to_string e)
                  (Printexc.get_backtrace ())
              in
-             failwith msg)
+             failwith msg )
        tests)
 
 let run tests =

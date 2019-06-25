@@ -38,17 +38,14 @@ let handle_connection
   in
   let process_request () =
     with_timeout read_timeout (Request.of_stream (Lwt_io.read_chars inch))
-    >>= fun request ->
-    f request
+    >>= fun request -> f request
   in
   let write_response response =
     let open Response in
     (* Add content length from body if not already in the headers *)
     let is_content_length_in_headers =
       List.exists
-        (function
-          | `Content_length _ -> true
-          | _ -> false)
+        (function `Content_length _ -> true | _ -> false)
         response.headers
     in
     let response_headers =
@@ -70,25 +67,21 @@ let handle_connection
     ( match response.body with
     | `Stream (_, s) -> Lwt_io.write_chars ouch s
     | `String s -> Lwt_io.write ouch s )
-    >>= fun () ->
-    Lwt_io.flush ouch
+    >>= fun () -> Lwt_io.flush ouch
   in
   catch
     (fun () ->
       catch
         (fun () -> with_timeout processing_timeout (process_request ()))
-        (fun e ->
-          write_error_handler e >>= fun () ->
-          raise Exit)
+        (fun e -> write_error_handler e >>= fun () -> raise Exit)
       >>= fun response ->
       catch
         (fun () -> with_timeout write_timeout (write_response response))
         write_error_handler
-      >>= fun () ->
-      close_connection ())
+      >>= fun () -> close_connection () )
     (fun _e ->
       (* catch Exit or exceptions raised by custom error handlers *)
-      close_connection ())
+      close_connection () )
 
 let handler
     ~read_timeout
@@ -104,7 +97,7 @@ let handler
   Lwt_io.establish_server_with_client_address ?fd ?buffer_size ?backlog
     ?no_close sockaddr (fun _client_address (ic, oc) ->
       handle_connection ~read_timeout ~processing_timeout ~write_timeout
-        ~write_error_handler f ic oc)
+        ~write_error_handler f ic oc )
 
 let handler_inet
     ?(read_timeout = default_read_timeout)

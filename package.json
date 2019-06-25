@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "ocaml": "4.6.1",
+    "@opam/ocamlformat": "^0.9.1",
     "@opam/reason": "*",
     "@opam/merlin": "*",
     "@opam/rtop": "*",

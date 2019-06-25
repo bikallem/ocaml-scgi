@@ -39,4 +39,4 @@ break-infix-before-func=false
 break-infix=wrap
 break-fun-decl=fit-or-vertical
 break-collection-expressions=wrap
-break-cases=all
+break-cases=fit
