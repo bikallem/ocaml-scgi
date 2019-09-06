@@ -1,4 +1,4 @@
-# TODO
+# TODO v2.0.0
 - [ ] Remove reasonml code.
 - [ ] Replace `lwt` with `Async`
 - [ ] Use Core as base library
