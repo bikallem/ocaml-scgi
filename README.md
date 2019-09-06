@@ -1,3 +1,10 @@
+# TODO
+- [ ] Replace `lwt` with `Async`
+- [ ] Use Core as base library
+- [ ] Add logging/tracing capabilities using `sexplib`
+- [ ] Add examples
+- [ ] Add unit tests using `Alcotest` or `ppx_expect`
+
 # ocaml-scgi
 
 [SCGI](http://www.python.ca/scgi/protocol.txt) implementation in OCaml
