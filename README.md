@@ -1,5 +1,6 @@
 # TODO v2.0.0
 - [ ] Remove reasonml code.
+- [ ] Remove different handlers in Server with on handler
 - [ ] Replace `lwt` with `Async`
 - [ ] Use Core as base library
 - [ ] Add logging/tracing capabilities using `sexplib`
