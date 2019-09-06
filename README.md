@@ -1,9 +1,11 @@
 # TODO
+- [ ] Remove reasonml code.
 - [ ] Replace `lwt` with `Async`
 - [ ] Use Core as base library
 - [ ] Add logging/tracing capabilities using `sexplib`
 - [ ] Add examples
 - [ ] Add unit tests using `Alcotest` or `ppx_expect`
+
 
 # ocaml-scgi
 
