@@ -1,5 +1,6 @@
 # TODO v2.0.0
 - [ ] Convert codebase to ReasonML
+- [ ] Use `ppx_let` for Lwt monad usage
 - [ ] Remove different handlers in Server with one handler?
 - [ ] Add logging/tracing capabilities using `[@deriving show]`
 - [ ] Add examples
