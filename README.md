@@ -1,11 +1,9 @@
 # TODO v2.0.0
-- [ ] Remove reasonml code.
-- [ ] Remove different handlers in Server with on handler
-- [ ] Replace `lwt` with `Async`
-- [ ] Use Core as base library
-- [ ] Add logging/tracing capabilities using `sexplib`
+- [ ] Convert codebase to ReasonML
+- [ ] Remove different handlers in Server with one handler?
+- [ ] Add logging/tracing capabilities using `[@deriving show]`
 - [ ] Add examples
-- [ ] Add unit tests using `Alcotest` or `ppx_expect`
+- [ ] Add unit tests using `rely`
 
 
 # ocaml-scgi
